@@ -1,0 +1,1 @@
+pyinstaller -F --distpath=.packaged/dist --specpath=.packaged/spec --workpath=.packaged/build Main.py --clean --name SortMyShit --icon assets/poop.ico

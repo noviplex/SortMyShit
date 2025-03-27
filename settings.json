@@ -1,0 +1,1 @@
+{"binarySearch": true, "binarySearchLargeFiles": true, "keepOriginalFiles": true, "logOutputInFile": true, "askBeforeRemovingDuplicates": true, "askBeforeRemovingEmptyFolders": true, "binaryComparisonLargeFilesThreshold": 5000000}

@@ -1,0 +1,10 @@
+# Compilation related files
+.packaged/build/
+.packaged/dist/
+.packaged/spec/
+
+# Local venv
+.virtual
+
+# Logs
+log/*
