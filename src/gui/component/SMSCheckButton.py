@@ -1,7 +1,8 @@
 from tkinter import Checkbutton
 
-from src.entity.Settings import Settings
 from src.configuration.ServiceManager import ServiceManager
+
+from src.service.SettingsService import SettingsService
 
 class SMSCheckButton(Checkbutton):
     def __init__(
@@ -14,15 +15,15 @@ class SMSCheckButton(Checkbutton):
         padx=10,
         pady=10
     ):
-        settings = serviceManager.get("Settings") # type: Settings
+        settingsService = serviceManager.get("SettingsService") # type: SettingsService
 
         super().__init__(
             container, 
             text=text, 
             variable=variable,
             command=command,
-            background=settings.backgroundColor, 
-            fg=settings.fontColor, 
+            background=settingsService.getSetting("backgroundColor"), 
+            fg=settingsService.getSetting("fontColor"), 
             border=None, 
             borderwidth=0,
             highlightthickness=0,

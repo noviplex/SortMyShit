@@ -5,7 +5,8 @@ from src.gui.component.SMSLabel import SMSLabel
 from src.gui.component.SMSCheckButton import SMSCheckButton
 
 from src.configuration.ServiceManager import ServiceManager
-from src.entity.Settings import Settings
+
+from src.service.SettingsService import SettingsService
 
 class SMSSettingsView(SMSView):
     def __init__(
@@ -16,13 +17,13 @@ class SMSSettingsView(SMSView):
         super().__init__(container, height=500)
         self.__expand()
 
-        self.settings = serviceManager.get("Settings") # type: Settings
+        self.settingsService = serviceManager.get("SettingsService") # type: SettingsService
 
         SMSLabel(container=self, text="Settings").grid(row=0, column=0, sticky='w')
 
         SMSLabel(container=self, text="Sort Files").grid(row=1, column=0, sticky='w')
 
-        Frame(self, bg=self.settings.fontColor, height=1, bd=0).grid(row=2, column=0, columnspan=2, sticky="ew")
+        Frame(self, bg=self.settingsService.getSetting("fontColor"), height=1, bd=0).grid(row=2, column=0, columnspan=2, sticky="ew")
 
         self.__createSettingCheckButton(
             settingName="keepOriginalFiles",
@@ -31,7 +32,7 @@ class SMSSettingsView(SMSView):
 
         SMSLabel(container=self, text="Remove Duplicates").grid(row=4, column=0, sticky='w')
 
-        Frame(self, bg=self.settings.fontColor, height=1, bd=0).grid(row=5, column=0, columnspan=2, sticky="ew")
+        Frame(self, bg=self.settingsService.getSetting("fontColor"), height=1, bd=0).grid(row=5, column=0, columnspan=2, sticky="ew")
 
         self.__createSettingCheckButton(
             settingName="binarySearch",
@@ -52,7 +53,7 @@ class SMSSettingsView(SMSView):
 
         #SMSLabel(container=self, text="Remove Empty Folders").grid(row=8, column=0, sticky='w')
 
-        #Frame(self, bg=self.settings.fontColor, height=1, bd=0).grid(row=9, column=0, columnspan=2, sticky="ew")
+        #Frame(self, bg=self.settingsService.getSetting("fontColor"), height=1, bd=0).grid(row=9, column=0, columnspan=2, sticky="ew")
 
         #self.__createSettingCheckButton(
         #    settingName="askBeforeRemovingEmptyFolders",
@@ -62,7 +63,7 @@ class SMSSettingsView(SMSView):
 
         SMSLabel(container=self, text="General").grid(row=11, column=0, sticky='w')
 
-        Frame(self, bg=self.settings.fontColor, height=1, bd=0).grid(row=12, column=0, columnspan=2, sticky="ew")
+        Frame(self, bg=self.settingsService.getSetting("fontColor"), height=1, bd=0).grid(row=12, column=0, columnspan=2, sticky="ew")
 
         self.__createSettingCheckButton(
             settingName="logOutputInFile",
@@ -76,10 +77,10 @@ class SMSSettingsView(SMSView):
 
     def __createSettingCheckButton(self, settingName: str, text: str):
         booleanVar = BooleanVar()
-        booleanVar.set(self.settings.getSetting(settingName))
+        booleanVar.set(self.settingsService.getSetting(settingName))
         return SMSCheckButton(
             container=self, 
             text=text, 
             variable=booleanVar,
-            command=lambda: self.settings.setSetting(settingName, booleanVar.get())
+            command=lambda: self.settingsService.setSetting(settingName, booleanVar.get())
         )

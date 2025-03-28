@@ -15,11 +15,10 @@ from src.event.ChangeViewEvent import ChangeViewEvent
 from src.event.FolderDeletedEvent import FolderDeletedEvent
 from src.event.FileMovedEvent import FileMovedEvent
 
-from src.entity.Settings import Settings
-
 from src.service.FileLogger import FileLogger
 from src.service.FileManagement import FileManagement
 from src.service.FolderManagement import FolderManagement
+from src.service.SettingsService import SettingsService
 
 class SortMyShit:
     def main(
@@ -28,22 +27,21 @@ class SortMyShit:
     ):
         # At the moment, services need to be registered manually and in order of usage
         # @TODO: Implement service registration from a configuration file
+        serviceManager.registerService("SettingsService", SettingsService)
+        serviceManager.get("SettingsService").runDir = os_path.dirname(os_path.abspath(sys_argv[0]))
+        
         serviceManager.registerServices({
-            "Settings": Settings,
-            # Events
             "ChangeViewEvent": ChangeViewEvent,
             "DuplicateFoundEvent": DuplicateFoundEvent,
             "FileMovedEvent": FileMovedEvent,
             "FolderDeletedEvent": FolderDeletedEvent,
             "LogActivityEvent": LogActivityEvent,
-            # Services
             "FileLogger": FileLogger,
             "FileManagement": FileManagement,
             "FolderManagement": FolderManagement,
         })
 
         serviceManager.get("FileLogger").activateLogging()
-        serviceManager.get("Settings").runDir = os_path.dirname(os_path.abspath(sys_argv[0]))
 
         root = Tk()
 

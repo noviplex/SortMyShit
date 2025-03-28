@@ -1,16 +1,17 @@
 from tkinter import Tk, Frame, Label
 from PIL import Image, ImageTk
 
-from src.entity.Settings import Settings
+from src.service.SettingsService import SettingsService
+
 from src.configuration.ServiceManager import ServiceManager
 
 class SMSImageDisplay(Frame):
     def __init__(self, container: Tk, image_path: str, serviceManager: ServiceManager = ServiceManager()):
-        settings = serviceManager.get("Settings") # type: Settings
+        settingsService = serviceManager.get("SettingsService") # type: SettingsService
         
         super().__init__(
             master=container,
-            bg=settings.backgroundColor,
+            bg=settingsService.getSetting("backgroundColor"),
             padx=10,
             pady=10
         )

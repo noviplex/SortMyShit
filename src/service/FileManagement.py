@@ -1,42 +1,44 @@
 from os import path as os_path, walk as os_walk, mkdir as os_mkdir, system as os_system
 from glob import glob
 
-from src.entity.Settings import Settings
-
 from src.event.DuplicateFoundEvent import DuplicateFoundEvent
 from src.event.LogActivityEvent import LogActivityEvent
 from src.event.FileMovedEvent import FileMovedEvent
 
 from src.configuration.ServiceManager import ServiceManager
 
+from src.service.SettingsService import SettingsService
+
 class FileManagement:
     def __init__(self, serviceManager: ServiceManager = ServiceManager()):
-        self.settings = serviceManager.get("Settings") # type: Settings
+        self.settingsService = serviceManager.get("SettingsService") # type: SettingsService
         self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
         self.duplicateFoundEvent = serviceManager.get("DuplicateFoundEvent") # type: DuplicateFoundEvent
         self.fileMovedEvent = serviceManager.get("FileMovedEvent") # type: FileMovedEvent
-        
+        self.destinationFolder = self.settingsService.getSetting("destinationFolder")
+
+
     def moveFilesToSortedFolder(self):
         self.logActivityEvent.trigger("Begin moving files to sorted folder")
             
-        if os_path.isdir(self.settings.destinationFolder) == False:
-            self.logActivityEvent.trigger("Creating folder " + self.settings.destinationFolder)
-            os_mkdir(self.settings.destinationFolder)
+        if os_path.isdir(self.destinationFolder) == False:
+            self.logActivityEvent.trigger("Creating folder " + self.destinationFolder)
+            os_mkdir(self.destinationFolder)
 
-        for category in self.settings.defaultTypeMapping:
-            destinationFolder = self.settings.destinationFolder + "/" + category
+        for category in self.settingsService.appSettings.defaultTypeMapping:
+            categoryDestinationFolder = self.destinationFolder + "/" + category
 
-            if os_path.isdir(destinationFolder) == False:
-                self.logActivityEvent.trigger("Creating subfolder " + destinationFolder)
-                os_mkdir(destinationFolder)
+            if os_path.isdir(categoryDestinationFolder) == False:
+                self.logActivityEvent.trigger("Creating subfolder " + categoryDestinationFolder)
+                os_mkdir(categoryDestinationFolder)
 
-            for extension in self.settings.defaultTypeMapping[category]:
-                filesFullPath = [y for x in os_walk(self.settings.folderToProcess) for y in glob(os_path.join(x[0], '*.' + extension))]
+            for extension in self.settingsService.appSettings.defaultTypeMapping[category]:
+                filesFullPath = [y for x in os_walk(self.settingsService.getSetting("folderToProcess")) for y in glob(os_path.join(x[0], '*.' + extension))]
 
-                if self.settings.getSetting("keepOriginalFiles") == True:
-                    self.__copyFile(filesFullPath, destinationFolder)
+                if self.settingsService.getSetting("keepOriginalFiles") == True:
+                    self.__copyFile(filesFullPath, categoryDestinationFolder)
                 else:
-                    self.__moveFile(filesFullPath, destinationFolder)
+                    self.__moveFile(filesFullPath, categoryDestinationFolder)
 
     def removeDuplicatesInMovedFiles(self):
         self.logActivityEvent.trigger("Begin removing duplicates")
@@ -52,7 +54,7 @@ class FileManagement:
                 continue
 
             for fileToCompare in allFiles:
-                if (self.settings.getSetting("binarySearch") == True):
+                if (self.settingsService.getSetting("binarySearch") == True):
                     self.__compareFileBinaries(fileToCompare, fileCompared)
                 else:
                     self.__compareFileNames(fileToCompare, fileCompared)
@@ -60,7 +62,7 @@ class FileManagement:
         self.logActivityEvent.trigger("Done")
 
     def __fetchAllFiles(self):
-        allFileFullPaths = [y for x in os_walk(self.settings.destinationFolder) for y in glob(os_path.join(x[0], '*.*'))]
+        allFileFullPaths = [y for x in os_walk(self.settingsService.getSetting("destinationFolder")) for y in glob(os_path.join(x[0], '*.*'))]
         allFileFullPaths.sort()
 
         allFiles = []
@@ -70,9 +72,9 @@ class FileManagement:
                 continue
 
             if (
-                os_path.getsize(fileFullPath) > self.settings.getSetting("binaryComparisonLargeFilesThreshold")
-                and self.settings.getSetting("binarySearch") == True 
-                and self.settings.getSetting("binarySearchLargeFiles") == False
+                os_path.getsize(fileFullPath) > self.settingsService.getSetting("binaryComparisonLargeFilesThreshold")
+                and self.settingsService.getSetting("binarySearch") == True 
+                and self.settingsService.getSetting("binarySearchLargeFiles") == False
             ):
                 self.duplicateFoundEvent.trigger("Skipping large file " + fileFullPath)
             else:
@@ -91,15 +93,16 @@ class FileManagement:
 
     def __compareFileBinaries(self, fileToCompare, fileCompared):
         self.logActivityEvent.trigger("Comparing " + fileCompared["fileFullPath"] + " with " + fileToCompare["fileFullPath"])
+        fileSizeThreshold = self.settingsService.getSetting("binaryComparisonLargeFilesThreshold")
 
         if (
             (
                 (
-                    os_path.getsize(fileCompared["fileFullPath"]) < self.settings.getSetting("binaryComparisonLargeFilesThreshold")
-                    and os_path.getsize(fileToCompare["fileFullPath"]) < self.settings.getSetting("binaryComparisonLargeFilesThreshold")
+                    os_path.getsize(fileCompared["fileFullPath"]) < fileSizeThreshold
+                    and os_path.getsize(fileToCompare["fileFullPath"]) < fileSizeThreshold
                 )
-                or self.settings.getSetting("binarySearchLargeFiles") == True
-            ) 
+                or self.settingsService.getSetting("binarySearchLargeFiles") == True
+            )
             and fileCompared["fileFullPath"] != fileToCompare["fileFullPath"]
             and fileCompared["filePartialContent"] == fileToCompare["filePartialContent"]
         ):
@@ -127,16 +130,16 @@ class FileManagement:
         self.duplicateFoundEvent.trigger(fileCompared["fileFullPath"] + " duplicate of " + fileToCompare["fileFullPath"])
         self.logActivityEvent.trigger(fileCompared["fileFullPath"] + " duplicate of " + fileToCompare["fileFullPath"])
 
-    def __moveFile(self, filesFullPath: str, destinationFolder: str):                    
-        self.__moveOrCopyFile("rm", filesFullPath, destinationFolder)
+    def __moveFile(self, filesFullPath: str, categoryDestinationFolder: str):                    
+        self.__moveOrCopyFile("rm", filesFullPath, categoryDestinationFolder)
         
-    def __copyFile(self, filesFullPath: str, destinationFolder: str):                    
-        self.__moveOrCopyFile("cp", filesFullPath, destinationFolder)
+    def __copyFile(self, filesFullPath: str, categoryDestinationFolder: str):                    
+        self.__moveOrCopyFile("cp", filesFullPath, categoryDestinationFolder)
 
-    def __moveOrCopyFile(self, command: str, filesFullPath: str, destinationFolder: str):
+    def __moveOrCopyFile(self, command: str, filesFullPath: str, categoryDestinationFolder: str):
         action = "copied" if command == "cp" else "moved"
         for fileFullPath in filesFullPath:
             
-            os_system(command + " \"" + fileFullPath + "\" " + destinationFolder)
-            self.fileMovedEvent.trigger(fileFullPath + " " + action + " successfully, now into " + destinationFolder)
-            self.logActivityEvent.trigger(fileFullPath + " " + action + " successfully, now into " + destinationFolder)
+            os_system(command + " \"" + fileFullPath + "\" " + categoryDestinationFolder)
+            self.fileMovedEvent.trigger(fileFullPath + " " + action + " successfully, now into " + categoryDestinationFolder)
+            self.logActivityEvent.trigger(fileFullPath + " " + action + " successfully, now into " + categoryDestinationFolder)

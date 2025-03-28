@@ -1,6 +1,7 @@
 from tkinter import Text, constants as tk_constants
 
-from src.entity.Settings import Settings
+from src.service.SettingsService import SettingsService
+
 from src.configuration.ServiceManager import ServiceManager
 
 class SMSTextBox(Text):
@@ -13,17 +14,17 @@ class SMSTextBox(Text):
             disabled: bool=True,
             serviceManager: ServiceManager = ServiceManager()
     ):
-        settings = serviceManager.get("Settings") # type: Settings
+        settingsService = serviceManager.get("SettingsService") # type: SettingsService
 
         super().__init__(
             master=container, 
-            bg=settings.backgroundColor,
-            fg=settings.fontColor,
+            bg=settingsService.getSetting("backgroundColor"),
+            fg=settingsService.getSetting("fontColor"),
             width=width,
             height=height,
             border=0,
             borderwidth=0,
-            highlightcolor=settings.fontColor,
+            highlightcolor=settingsService.getSetting("fontColor"),
             padx=5,
             pady=5
         )

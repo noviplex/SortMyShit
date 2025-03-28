@@ -1,6 +1,7 @@
 from tkinter import Tk, Frame
 
-from src.entity.Settings import Settings
+from src.service.SettingsService import SettingsService
+
 from src.configuration.ServiceManager import ServiceManager
 
 class SMSView(Frame):
@@ -11,7 +12,7 @@ class SMSView(Frame):
             width=1600,
             height=800
     ):
-        settings = serviceManager.get("Settings") # type: Settings
+        settingsService = serviceManager.get("SettingsService") # type: SettingsService
 
         super().__init__(container, width=width, height=height, padx=10, pady=10)
-        self.configure(bg=settings.backgroundColor)
+        self.configure(bg=settingsService.getSetting("backgroundColor"))

@@ -1,5 +1,6 @@
 from tkinter import Tk, Button
-from src.entity.Settings import Settings
+
+from src.service.SettingsService import SettingsService
 
 from src.configuration.ServiceManager import ServiceManager
 
@@ -13,15 +14,15 @@ class SMSButton(Button):
             height=2,
             serviceManager: ServiceManager = ServiceManager()
     ):
-        settings = serviceManager.get("Settings") # type: Settings
+        settingsService = serviceManager.get("SettingsService") # type: SettingsService
 
         super().__init__(
             master=container,
             text=text, 
-            background=settings.backgroundColor,
-            fg=settings.fontColor, 
-            activebackground=settings.fontColor,
-            activeforeground=settings.backgroundColor,
+            background=settingsService.getSetting("backgroundColor"),
+            fg=settingsService.getSetting("fontColor"), 
+            activebackground=settingsService.getSetting("fontColor"),
+            activeforeground=settingsService.getSetting("backgroundColor"),
             command=command,
             width=width,
             height=height,

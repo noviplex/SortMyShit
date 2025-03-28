@@ -1,12 +1,13 @@
 from tkinter import Tk, Frame
 from playsound import playsound
 
-from src.entity.Settings import Settings
-from src.configuration.ServiceManager import ServiceManager
+from service.SettingsService import SettingsService
+
+from configuration.ServiceManager import ServiceManager
 
 class SMSAudioPlayer(Frame):
     def __init__(self, container: Tk, audio_path: str, serviceManager: ServiceManager = ServiceManager()):
-        settings = serviceManager.get("Settings") # type: Settings
+        settings = serviceManager.get("SettingsService") # type: SettingsService
 
         super().__init__(
             master=container,

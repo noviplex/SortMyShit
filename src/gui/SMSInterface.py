@@ -9,7 +9,7 @@ from src.event.ChangeViewEvent import ChangeViewEvent
 from src.configuration.ServiceManager import ServiceManager
 from src.configuration.ViewManager import ViewManager
 
-from src.entity.Settings import Settings
+from src.service.SettingsService import SettingsService
 
 class SMSInterface:
     def __init__(
@@ -20,7 +20,7 @@ class SMSInterface:
     ):
         self.viewManager = viewManager
 
-        settings = serviceManager.get("Settings") # type: Settings
+        settingsService = serviceManager.get("SettingsService") # type: SettingsService
         
         changeViewEvent = serviceManager.get("ChangeViewEvent") # type: ChangeViewEvent
 
@@ -32,7 +32,7 @@ class SMSInterface:
         root.title("SortMyShit")
         root.geometry('1600x900')
         root.resizable(width=False, height=False)
-        root.configure(bg=settings.backgroundColor)
+        root.configure(bg=settingsService.getSetting("backgroundColor"))
 
         navbar = SMSNavBar(root)
         navbar.grid(row=0, column=0, sticky='w')

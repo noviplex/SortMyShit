@@ -1,6 +1,7 @@
 from tkinter import Tk, Frame
 
-from src.entity.Settings import Settings
+from src.service.SettingsService import SettingsService
+
 from src.configuration.ServiceManager import ServiceManager
 
 class SMSButtonContainer(Frame):
@@ -16,7 +17,7 @@ class SMSButtonContainer(Frame):
             buttonSpacingY=0,
             ServiceManager: ServiceManager = ServiceManager()
     ):
-        settings = ServiceManager.get("Settings") # type: Settings
+        settingsService = ServiceManager.get("SettingsService") # type: SettingsService
 
         super().__init__(
             master=container,
@@ -24,7 +25,7 @@ class SMSButtonContainer(Frame):
             width=width,
             border=0,
             borderwidth=0,
-            bg=settings.backgroundColor,
+            bg=settingsService.getSetting("backgroundColor"),
             padx=padx,
             pady=pady
         )
