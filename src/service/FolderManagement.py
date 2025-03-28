@@ -29,4 +29,3 @@ class FolderManagement:
 
         self.folderDeletedEvent.trigger("Finished deleting empty directories. " + str(emptyFoldersCount) + " folder(s) found")
         self.logActivityEvent.trigger("Done")
-                

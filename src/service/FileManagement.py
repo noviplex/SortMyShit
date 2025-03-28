@@ -1,4 +1,4 @@
-from os import path as os_path, walk as os_walk, mkdir as os_mkdir, system as os_system
+from os import path as os_path, walk as os_walk, mkdir as os_mkdir, remove as os_remove, system as os_system
 from glob import glob
 
 from src.event.DuplicateFoundEvent import DuplicateFoundEvent
@@ -39,6 +39,7 @@ class FileManagement:
                     self.__copyFile(filesFullPath, categoryDestinationFolder)
                 else:
                     self.__moveFile(filesFullPath, categoryDestinationFolder)
+        self.logActivityEvent.trigger("Done")
 
     def removeDuplicatesInMovedFiles(self):
         self.logActivityEvent.trigger("Begin removing duplicates")
@@ -53,16 +54,15 @@ class FileManagement:
             if not os_path.isfile(fileCompared["fileFullPath"]):
                 continue
 
-            for fileToCompare in allFiles:
-                if (self.settingsService.getSetting("binarySearch") == True):
-                    self.__compareFileBinaries(fileToCompare, fileCompared)
-                else:
-                    self.__compareFileNames(fileToCompare, fileCompared)
+            if (self.settingsService.getSetting("binarySearch") == True):
+                self.__compareFileBinaries(allFiles, fileCompared)
+            else:
+                self.__compareFileNames(allFiles, fileCompared)
 
         self.logActivityEvent.trigger("Done")
 
     def __fetchAllFiles(self):
-        allFileFullPaths = [y for x in os_walk(self.settingsService.getSetting("destinationFolder")) for y in glob(os_path.join(x[0], '*.*'))]
+        allFileFullPaths = [y for x in os_walk(self.settingsService.getSetting("removeDuplicatesFolder")) for y in glob(os_path.join(x[0], '*.*'))]
         allFileFullPaths.sort()
 
         allFiles = []
@@ -91,44 +91,51 @@ class FileManagement:
         return allFiles
     
 
-    def __compareFileBinaries(self, fileToCompare, fileCompared):
-        self.logActivityEvent.trigger("Comparing " + fileCompared["fileFullPath"] + " with " + fileToCompare["fileFullPath"])
+    def __compareFileBinaries(self, allFiles, fileCompared):
         fileSizeThreshold = self.settingsService.getSetting("binaryComparisonLargeFilesThreshold")
 
-        if (
-            (
+        for fileToCompare in allFiles:
+            if not os_path.isfile(fileToCompare["fileFullPath"]):
+                continue
+            else:
+                self.logActivityEvent.trigger("Comparing " + fileCompared["fileFullPath"] + " with " + fileToCompare["fileFullPath"])
+
+            if (
                 (
-                    os_path.getsize(fileCompared["fileFullPath"]) < fileSizeThreshold
-                    and os_path.getsize(fileToCompare["fileFullPath"]) < fileSizeThreshold
+                    (
+                        os_path.getsize(fileCompared["fileFullPath"]) < fileSizeThreshold
+                        and os_path.getsize(fileToCompare["fileFullPath"]) < fileSizeThreshold
+                    )
+                    or self.settingsService.getSetting("binarySearchLargeFiles") == True
                 )
-                or self.settingsService.getSetting("binarySearchLargeFiles") == True
-            )
-            and fileCompared["fileFullPath"] != fileToCompare["fileFullPath"]
-            and fileCompared["filePartialContent"] == fileToCompare["filePartialContent"]
-        ):
-            fileFetchedOpened = open(fileToCompare["fileFullPath"], 'rb')
-            fileOpened = open(fileCompared["fileFullPath"], 'rb')
+                and fileCompared["fileFullPath"] != fileToCompare["fileFullPath"]
+                and fileCompared["filePartialContent"] == fileToCompare["filePartialContent"]
+            ):
 
-            if (fileFetchedOpened.read() == fileOpened.read()):
-                # TODO: add file deletion
+                fileFetchedOpened = open(fileToCompare["fileFullPath"], 'rb')
+                fileOpened = open(fileCompared["fileFullPath"], 'rb')
+
+                if (fileFetchedOpened.read() == fileOpened.read()):
+                    os_remove(fileToCompare["fileFullPath"])
+                    self.__notifyDuplicateFound(fileToCompare, fileCompared)
+                fileFetchedOpened.close()
+                fileOpened.close()
+
+    def __compareFileNames(self, allFiles, fileCompared):
+        for fileToCompare in allFiles:
+            self.logActivityEvent.trigger("Comparing " + fileCompared["fileFullPath"] + " with " + fileToCompare["fileFullPath"])
+            
+            if (
+                os_path.basename(fileCompared["fileFullPath"]) == os_path.basename(fileToCompare["fileFullPath"]) 
+                and fileCompared["fileFullPath"] != fileToCompare["fileFullPath"]
+            ):
+                os_remove(fileToCompare["fileFullPath"])
                 self.__notifyDuplicateFound(fileToCompare, fileCompared)
-
-            fileFetchedOpened.close()
-            fileOpened.close()
-
-    def __compareFileNames(self, fileToCompare, fileCompared):
-        self.logActivityEvent.trigger("Comparing " + fileCompared["fileFullPath"] + " with " + fileToCompare["fileFullPath"])
-
-        if (
-            os_path.basename(fileCompared["fileFullPath"]) == os_path.basename(fileToCompare["fileFullPath"]) 
-            and fileCompared["fileFullPath"] != fileToCompare["fileFullPath"]
-        ):
-            # TODO: add file deletion
-            self.__notifyDuplicateFound(fileToCompare, fileCompared)
+                break
 
     def __notifyDuplicateFound(self, fileToCompare, fileCompared):
-        self.duplicateFoundEvent.trigger(fileCompared["fileFullPath"] + " duplicate of " + fileToCompare["fileFullPath"])
-        self.logActivityEvent.trigger(fileCompared["fileFullPath"] + " duplicate of " + fileToCompare["fileFullPath"])
+        self.duplicateFoundEvent.trigger("Removed " + fileToCompare["fileFullPath"] + " duplicate of " + fileCompared["fileFullPath"])
+        self.logActivityEvent.trigger("Removed " + fileToCompare["fileFullPath"] + " duplicate of " + fileCompared["fileFullPath"])
 
     def __moveFile(self, filesFullPath: str, categoryDestinationFolder: str):                    
         self.__moveOrCopyFile("rm", filesFullPath, categoryDestinationFolder)

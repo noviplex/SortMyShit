@@ -30,5 +30,3 @@ class SettingsService:
         userSettings[name] = value
         
         self.saveSettings(userSettings)
-
-

@@ -14,6 +14,7 @@ class Settings:
         "backgroundColor": "#46464C",
         "folderToProcess": "/path/to/folder/to/sort",
         "destinationFolder": "/path/to/destination/folder",
+        "removeDuplicatesFolder": "/path/to/destination/folder",
         "binarySearch": True, 
         "binarySearchLargeFiles": False, 
         "keepOriginalFiles": True, 

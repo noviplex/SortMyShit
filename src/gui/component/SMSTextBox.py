@@ -26,7 +26,7 @@ class SMSTextBox(Text):
             borderwidth=0,
             highlightcolor=settingsService.getSetting("fontColor"),
             padx=5,
-            pady=5
+            pady=5,
         )
 
         if disabled == True:
