@@ -18,6 +18,14 @@ git clone https://github.com/noviplex/SortMyShit.git
 cd SortMyShit
 ```
 
+Create and use a virtual environment if needed (python3-venv required):
+
+```bash
+python3 -m venv .virtual
+. .virtual/bin/activate 
+```
+
+
 Install dependencies:
 
 ```bash
