@@ -56,7 +56,7 @@ Contributions are welcome! Please follow these steps:
 
 1. Fork the repository.
 2. Create a new branch: `git checkout -b [feature/fix]/[feature-name]`.
-3. Commit your changes following the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) syntax: `git commit -m "Add type(scope): description"`.
+3. Commit your changes following the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) syntax: `git commit -m "type(scope): description"`.
 4. Push to the branch: `git push origin feature-name`.
 5. Open a pull request.
 
