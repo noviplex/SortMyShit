@@ -1,4 +1,4 @@
-class DuplicateFoundEvent:
+class DeleteEmptyFoldersEvent:
     def __init__(self):
         self.listeners = []
 

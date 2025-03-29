@@ -10,14 +10,16 @@ from src.configuration.ServiceManager import ServiceManager
 from src.configuration.ViewManager import ViewManager
 
 from src.event.LogActivityEvent import LogActivityEvent
-from src.event.DuplicateFoundEvent import DuplicateFoundEvent
+from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
 from src.event.ChangeViewEvent import ChangeViewEvent
-from src.event.FolderDeletedEvent import FolderDeletedEvent
-from src.event.FileMovedEvent import FileMovedEvent
+from src.event.DeleteEmptyFoldersEvent import DeleteEmptyFoldersEvent
+from src.event.SortFilesEvent import SortFilesEvent
 
+from src.service.DuplicateSearcher import DuplicateSearcher
 from src.service.FileLogger import FileLogger
-from src.service.FileManagement import FileManagement
-from src.service.FolderManagement import FolderManagement
+from src.service.FileManager import FileManager
+from src.service.FileSorter import FileSorter
+from src.service.FolderManager import FolderManager
 from src.service.SettingsService import SettingsService
 
 class SortMyShit:
@@ -32,13 +34,15 @@ class SortMyShit:
         
         serviceManager.registerServices({
             "ChangeViewEvent": ChangeViewEvent,
-            "DuplicateFoundEvent": DuplicateFoundEvent,
-            "FileMovedEvent": FileMovedEvent,
-            "FolderDeletedEvent": FolderDeletedEvent,
+            "RemoveDuplicatesEvent": RemoveDuplicatesEvent,
+            "SortFilesEvent": SortFilesEvent,
+            "DeleteEmptyFoldersEvent": DeleteEmptyFoldersEvent,
             "LogActivityEvent": LogActivityEvent,
             "FileLogger": FileLogger,
-            "FileManagement": FileManagement,
-            "FolderManagement": FolderManagement,
+            "DuplicateSearcher": DuplicateSearcher,
+            "FileSorter": FileSorter,
+            "FileManager": FileManager,
+            "FolderManager": FolderManager,
         })
 
         serviceManager.get("FileLogger").activateLogging()

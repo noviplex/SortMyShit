@@ -6,13 +6,13 @@ from src.gui.component.SMSTextBox import SMSTextBox
 from src.gui.component.SMSLabel import SMSLabel
 from src.gui.view.SMSView import SMSView
 
-from src.service.FileManagement import FileManagement
-from src.service.FolderManagement import FolderManagement
+from src.service.FileManager import FileManager
+from src.service.FolderManager import FolderManager
 from src.configuration.ServiceManager import ServiceManager
 from src.event.LogActivityEvent import LogActivityEvent
-from src.event.DuplicateFoundEvent import DuplicateFoundEvent
-from src.event.FileMovedEvent import FileMovedEvent
-from src.event.FolderDeletedEvent import FolderDeletedEvent
+from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
+from src.event.SortFilesEvent import SortFilesEvent
+from src.event.DeleteEmptyFoldersEvent import DeleteEmptyFoldersEvent
 
 class SMSHomeView(SMSView):
     def __init__(
@@ -22,17 +22,17 @@ class SMSHomeView(SMSView):
     ):
         super().__init__(container)
 
-        self.fileManagement = serviceManager.get("FileManagement") # type: FileManagement
-        self.folderManagement = serviceManager.get("FolderManagement") # type: FolderManagement
+        self.fileManager = serviceManager.get("FileManager") # type: FileManager
+        self.folderManager = serviceManager.get("FolderManager") # type: FolderManager
         logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
-        duplicateFoundEvent = serviceManager.get("DuplicateFoundEvent") # type: DuplicateFoundEvent
-        fileMovedEvent = serviceManager.get("FileMovedEvent") # type: FileMovedEvent
-        folderDeletedEvent = serviceManager.get("FolderDeletedEvent") # type: FolderDeletedEvent
+        removeDuplicatesEvent = serviceManager.get("RemoveDuplicatesEvent") # type: RemoveDuplicatesEvent
+        sortFilesEvent = serviceManager.get("SortFilesEvent") # type: SortFilesEvent
+        deleteEmptyFoldersEvent = serviceManager.get("DeleteEmptyFoldersEvent") # type: DeleteEmptyFoldersEvent
 
         logActivityEvent.subscribe(self.__logOutput)
-        duplicateFoundEvent.subscribe(self.__showEntryInMainOutput)
-        fileMovedEvent.subscribe(self.__showEntryInMainOutput)
-        folderDeletedEvent.subscribe(self.__showEntryInMainOutput)
+        removeDuplicatesEvent.subscribe(self.__showEntryInMainOutput)
+        sortFilesEvent.subscribe(self.__showEntryInMainOutput)
+        deleteEmptyFoldersEvent.subscribe(self.__showEntryInMainOutput)
 
         mainText = SMSLabel(container=self, text="Select action to perform")
         mainText.grid(column=0, row=0, sticky='w')
@@ -49,8 +49,8 @@ class SMSHomeView(SMSView):
         )
         buttonFrame.setButtons([
             SMSButton(buttonFrame, "Remove Empty Folders", self.__removeEmptyFolders),
-            SMSButton(buttonFrame, "Move Files to Sorted Folder", self.__moveFilesToSortedFolder),
             SMSButton(buttonFrame, "Remove duplicate files", self.__removeDuplicatesInMovedFiles),
+            SMSButton(buttonFrame, "Move Files to Sorted Folder", self.__moveFilesToSortedFolder),
         ])
         buttonFrame.grid(column=0, row=1, sticky='n')
 
@@ -71,15 +71,15 @@ class SMSHomeView(SMSView):
 
     def __removeEmptyFolders(self):
         self.__clearOutput()
-        self.folderManagement.removeEmptyFolder()
+        self.folderManager.removeEmptyFolder()
 
     def __moveFilesToSortedFolder(self):
         self.__clearOutput()
-        self.fileManagement.moveFilesToSortedFolder()
+        self.fileManager.moveFilesToSortedFolder()
 
     def __removeDuplicatesInMovedFiles(self):
         self.__clearOutput()
-        self.fileManagement.removeDuplicatesInMovedFiles()
+        self.fileManager.removeDuplicatesInMovedFiles()
 
     def __clearOutput(self):
         self.output.config(state=tk_constants.NORMAL)
