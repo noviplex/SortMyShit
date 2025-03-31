@@ -2,6 +2,10 @@
 
 SortMyShit is an open-source Python project designed to help you organize and manage your files effortlessly. It provides customizable sorting rules to keep your directories clean and structured.
 
+## Download
+
+Latest version available for Linux [on SourceForge](https://sourceforge.net/projects/sortmyshit/)
+
 ## Features
 
 - Automatically sort files based on extensions, names, or custom rules.
