@@ -1,3 +1,5 @@
+from src.gui.view.SMSView import SMSView
+
 class ViewManager:
     def __new__(viewManager):
         if not hasattr(viewManager, 'instance'):
@@ -11,7 +13,8 @@ class ViewManager:
         return self.viewManager[viewName]
     
     def registerView(self, viewName, view):
-        # TODO check if view passed is instance of SMSView
+        if not isinstance(view, SMSView):
+            raise TypeError("Service must be an instance of SMSView")
         if viewName not in self.viewManager:
             self.viewManager[viewName] = view
 

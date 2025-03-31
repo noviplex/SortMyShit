@@ -1,4 +1,4 @@
-from tkinter import Tk, Scrollbar, constants as tk_constants
+from tkinter import Tk, constants as tk_constants
 
 from src.gui.component.SMSButton import SMSButton
 from src.gui.component.SMSButtonContainer import SMSButtonContainer
