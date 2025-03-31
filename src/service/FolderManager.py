@@ -1,7 +1,7 @@
 from os import rmdir as os_rmdir, walk as os_walk
 
 from src.event.LogActivityEvent import LogActivityEvent
-from src.event.DeleteEmptyFoldersEvent import DeleteEmptyFoldersEvent
+from src.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
 
 from src.service.SettingsService import SettingsService
 
@@ -11,7 +11,7 @@ class FolderManager:
     def __init__(self, serviceManager: ServiceManager = ServiceManager()):
         self.logActivityEvent = serviceManager.get("SettingsService") # type: SettingsService
         self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
-        self.deleteEmptyFoldersEvent = serviceManager.get("DeleteEmptyFoldersEvent") # type: DeleteEmptyFoldersEvent
+        self.removeEmptyFoldersEvent = serviceManager.get("RemoveEmptyFoldersEvent") # type: RemoveEmptyFoldersEvent
         self.settingsService = serviceManager.get("SettingsService") # type: SettingsService
 
     def removeEmptyFolder(self):
@@ -24,8 +24,8 @@ class FolderManager:
                 emptyFoldersCount += 1
 
                 deletedFolderText = "Deleted empty directory " + root
-                self.deleteEmptyFoldersEvent.trigger(deletedFolderText)
+                self.removeEmptyFoldersEvent.trigger(deletedFolderText)
                 self.logActivityEvent.trigger(deletedFolderText)
 
-        self.deleteEmptyFoldersEvent.trigger("Finished deleting empty directories. " + str(emptyFoldersCount) + " folder(s) found")
+        self.removeEmptyFoldersEvent.trigger("Finished deleting empty directories. " + str(emptyFoldersCount) + " folder(s) found")
         self.logActivityEvent.trigger("Done")

@@ -12,7 +12,7 @@ from src.configuration.ServiceManager import ServiceManager
 from src.event.LogActivityEvent import LogActivityEvent
 from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
 from src.event.SortFilesEvent import SortFilesEvent
-from src.event.DeleteEmptyFoldersEvent import DeleteEmptyFoldersEvent
+from src.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
 
 class SMSHomeView(SMSView):
     def __init__(
@@ -26,13 +26,16 @@ class SMSHomeView(SMSView):
         self.folderManager = serviceManager.get("FolderManager") # type: FolderManager
         logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
         removeDuplicatesEvent = serviceManager.get("RemoveDuplicatesEvent") # type: RemoveDuplicatesEvent
+        removeEmptyFoldersEvent = serviceManager.get("RemoveEmptyFoldersEvent") # type: RemoveEmptyFoldersEvent
+        removeEmptyFilesEvent = serviceManager.get("RemoveEmptyFilesEvent") # type: RemoveEmptyFoldersEvent
         sortFilesEvent = serviceManager.get("SortFilesEvent") # type: SortFilesEvent
-        deleteEmptyFoldersEvent = serviceManager.get("DeleteEmptyFoldersEvent") # type: DeleteEmptyFoldersEvent
 
         logActivityEvent.subscribe(self.__logOutput)
+
         removeDuplicatesEvent.subscribe(self.__showEntryInMainOutput)
         sortFilesEvent.subscribe(self.__showEntryInMainOutput)
-        deleteEmptyFoldersEvent.subscribe(self.__showEntryInMainOutput)
+        removeEmptyFilesEvent.subscribe(self.__showEntryInMainOutput)
+        removeEmptyFoldersEvent.subscribe(self.__showEntryInMainOutput)
 
         mainText = SMSLabel(container=self, text="Select action to perform")
         mainText.grid(column=0, row=0, sticky='w')
@@ -49,6 +52,7 @@ class SMSHomeView(SMSView):
         )
         buttonFrame.setButtons([
             SMSButton(buttonFrame, "Remove Empty Folders", self.__removeEmptyFolders),
+            SMSButton(buttonFrame, "Remove Empty Files", self.__removeEmptyFiles),
             SMSButton(buttonFrame, "Remove duplicate files", self.__removeDuplicatesInMovedFiles),
             SMSButton(buttonFrame, "Move Files to Sorted Folder", self.__moveFilesToSortedFolder),
         ])
@@ -72,6 +76,10 @@ class SMSHomeView(SMSView):
     def __removeEmptyFolders(self):
         self.__clearOutput()
         self.folderManager.removeEmptyFolder()
+
+    def __removeEmptyFiles(self):
+        self.__clearOutput()
+        self.fileManager.removeEmptyFiles()
 
     def __moveFilesToSortedFolder(self):
         self.__clearOutput()
