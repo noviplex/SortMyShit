@@ -12,7 +12,8 @@ from src.configuration.ViewManager import ViewManager
 from src.event.LogActivityEvent import LogActivityEvent
 from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
 from src.event.ChangeViewEvent import ChangeViewEvent
-from src.event.DeleteEmptyFoldersEvent import DeleteEmptyFoldersEvent
+from src.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
+from src.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
 from src.event.SortFilesEvent import SortFilesEvent
 
 from src.service.DuplicateSearcher import DuplicateSearcher
@@ -36,7 +37,8 @@ class SortMyShit:
             "ChangeViewEvent": ChangeViewEvent,
             "RemoveDuplicatesEvent": RemoveDuplicatesEvent,
             "SortFilesEvent": SortFilesEvent,
-            "DeleteEmptyFoldersEvent": DeleteEmptyFoldersEvent,
+            "RemoveEmptyFilesEvent": RemoveEmptyFilesEvent,
+            "RemoveEmptyFoldersEvent": RemoveEmptyFoldersEvent,
             "LogActivityEvent": LogActivityEvent,
             "FileLogger": FileLogger,
             "DuplicateSearcher": DuplicateSearcher,

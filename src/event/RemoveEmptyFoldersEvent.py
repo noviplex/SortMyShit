@@ -1,4 +1,4 @@
-class DeleteEmptyFoldersEvent:
+class RemoveEmptyFoldersEvent:
     def __init__(self):
         self.listeners = []
 

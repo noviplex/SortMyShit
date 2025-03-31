@@ -1,7 +1,8 @@
-from os import path as os_path, walk as os_walk, mkdir as os_mkdir, remove as os_remove, system as os_system
+from os import path as os_path, walk as os_walk, mkdir as os_mkdir, remove as os_remove
 from glob import glob
 
 from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
+from src.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
 from src.event.LogActivityEvent import LogActivityEvent
 
 from src.configuration.ServiceManager import ServiceManager
@@ -16,8 +17,26 @@ class FileManager:
         self.duplicateSearcher = serviceManager.get("DuplicateSearcher") # type: DuplicateSearcher
         self.fileSorter = serviceManager.get("FileSorter") # type: FileSorter
         self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
+        self.removeEmptyFilesEvent = serviceManager.get("RemoveEmptyFilesEvent") # type: RemoveEmptyFilesEvent
         self.removeDuplicatesEvent = serviceManager.get("RemoveDuplicatesEvent") # type: RemoveDuplicatesEvent
         self.destinationFolder = self.settingsService.getSetting("destinationFolder")
+
+    def removeEmptyFiles(self):
+        allFiles = self.__fetchAllFiles(skipEmptyFiles=False)
+
+        for file in allFiles:
+            if not os_path.isfile(file["fileFullPath"]):
+                continue
+
+            f = open(file["fileFullPath"], 'rb')
+            fileContent = f.read(128)
+
+            if len(fileContent) == 0:
+                os_remove(file["fileFullPath"])
+                self.removeEmptyFilesEvent.trigger("Removed empty File " + file["fileFullPath"])
+                
+        return allFiles
+
 
     def moveFilesToSortedFolder(self):
         self.logActivityEvent.trigger("Begin moving files to sorted folder")
@@ -63,7 +82,7 @@ class FileManager:
 
         self.logActivityEvent.trigger("Done")
 
-    def __fetchAllFiles(self):
+    def __fetchAllFiles(self, skipEmptyFiles: bool = True, skipLargeFiles: bool = True) :
         allFileFullPaths = [y for x in os_walk(self.settingsService.getSetting("removeDuplicatesFolder")) for y in glob(os_path.join(x[0], '*.*'))]
         allFileFullPaths.sort()
 
@@ -77,6 +96,7 @@ class FileManager:
                 os_path.getsize(fileFullPath) > self.settingsService.getSetting("binaryComparisonLargeFilesThreshold")
                 and self.settingsService.getSetting("binarySearch") == True 
                 and self.settingsService.getSetting("binarySearchLargeFiles") == False
+                and skipLargeFiles
             ):
                 self.removeDuplicatesEvent.trigger("Skipping large file " + fileFullPath)
             else:
@@ -84,7 +104,7 @@ class FileManager:
 
                 fileContent = f.read(128)
 
-                if len(fileContent) == 0:
+                if len(fileContent) == 0 and skipEmptyFiles:
                     self.removeDuplicatesEvent.trigger("Empty File " + fileFullPath)
                 else:
                     allFiles.append({"fileFullPath": fileFullPath, "filePartialContent": fileContent})
