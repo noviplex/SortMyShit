@@ -5,13 +5,15 @@ from src.event.LogActivityEvent import LogActivityEvent
 
 from src.service.SettingsService import SettingsService
 
-from src.configuration.ServiceManager import ServiceManager
-
 class FileLogger:
 
-    def __init__(self, serviceManager: ServiceManager = ServiceManager()):
-        self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
-        self.settingsService = serviceManager.get("SettingsService") # type: SettingsService
+    def __init__(
+            self, 
+            logactivityEvent: LogActivityEvent,
+            settingsService: SettingsService
+    ):
+        self.logActivityEvent = logactivityEvent
+        self.settingsService = settingsService
 
     def activateLogging(self):
         self.logActivityEvent.subscribe(self.logInFile)

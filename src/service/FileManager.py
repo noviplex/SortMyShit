@@ -5,24 +5,30 @@ from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
 from src.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
 from src.event.LogActivityEvent import LogActivityEvent
 
-from src.configuration.ServiceManager import ServiceManager
-
 from src.service.SettingsService import SettingsService
 from src.service.DuplicateSearcher import DuplicateSearcher
 from src.service.FileSorter import FileSorter
 
 class FileManager:
-    def __init__(self, serviceManager: ServiceManager = ServiceManager()):
-        self.settingsService = serviceManager.get("SettingsService") # type: SettingsService
-        self.duplicateSearcher = serviceManager.get("DuplicateSearcher") # type: DuplicateSearcher
-        self.fileSorter = serviceManager.get("FileSorter") # type: FileSorter
-        self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
-        self.removeEmptyFilesEvent = serviceManager.get("RemoveEmptyFilesEvent") # type: RemoveEmptyFilesEvent
-        self.removeDuplicatesEvent = serviceManager.get("RemoveDuplicatesEvent") # type: RemoveDuplicatesEvent
-        self.destinationFolder = self.settingsService.getSetting("destinationFolder")
+    def __init__(
+            self, 
+            settingsService: SettingsService,
+            duplicateSearcher: DuplicateSearcher,
+            fileSorter: FileSorter,
+            logActivityEvent: LogActivityEvent,
+            removeEmptyFilesEvent: RemoveEmptyFilesEvent,
+            removeDuplicatesEvent: RemoveDuplicatesEvent,
+    ):
+        self.duplicateSearcher = duplicateSearcher
+        self.fileSorter = fileSorter
+        self.logActivityEvent = logActivityEvent
+        self.removeEmptyFilesEvent = removeEmptyFilesEvent
+        self.removeDuplicatesEvent = removeDuplicatesEvent
+        self.settingsService = settingsService
 
     def removeEmptyFiles(self):
-        allFiles = self.__fetchAllFiles(skipEmptyFiles=False)
+        # TODO add param to pick folder from which removing empty files
+        allFiles = self.__fetchAllFiles(self.settingsService.getSetting("removeDuplicatesFolder"), skipEmptyFiles=False)
 
         for file in allFiles:
             if not os_path.isfile(file["fileFullPath"]):
@@ -39,14 +45,16 @@ class FileManager:
 
 
     def moveFilesToSortedFolder(self):
+        destinationFolder = self.settingsService.getSetting("destinationFolder")
+
         self.logActivityEvent.trigger("Begin moving files to sorted folder")
             
-        if os_path.isdir(self.destinationFolder) == False:
-            self.logActivityEvent.trigger("Creating folder " + self.destinationFolder)
-            os_mkdir(self.destinationFolder)
+        if os_path.isdir(destinationFolder) == False:
+            self.logActivityEvent.trigger("Creating folder " + destinationFolder)
+            os_mkdir(destinationFolder)
 
         for category in self.settingsService.appSettings.defaultTypeMapping:
-            categoryDestinationFolder = self.destinationFolder + "/" + category
+            categoryDestinationFolder = destinationFolder + "/" + category
 
             if os_path.isdir(categoryDestinationFolder) == False:
                 self.logActivityEvent.trigger("Creating subfolder " + categoryDestinationFolder)
@@ -66,7 +74,7 @@ class FileManager:
 
         self.logActivityEvent.trigger("Fetching files")
 
-        allFiles = self.__fetchAllFiles()
+        allFiles = self.__fetchAllFiles(self.settingsService.getSetting("removeDuplicatesFolder"))
 
         self.logActivityEvent.trigger("Processing files")
 
@@ -82,8 +90,13 @@ class FileManager:
 
         self.logActivityEvent.trigger("Done")
 
-    def __fetchAllFiles(self, skipEmptyFiles: bool = True, skipLargeFiles: bool = True) :
-        allFileFullPaths = [y for x in os_walk(self.settingsService.getSetting("removeDuplicatesFolder")) for y in glob(os_path.join(x[0], '*.*'))]
+    def __fetchAllFiles(
+            self, 
+            folder,
+            skipEmptyFiles: bool = True, 
+            skipLargeFiles: bool = True
+    ) :
+        allFileFullPaths = [y for x in os_walk(folder) for y in glob(os_path.join(x[0], '*.*'))]
         allFileFullPaths.sort()
 
         allFiles = []

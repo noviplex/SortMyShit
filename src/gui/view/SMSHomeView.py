@@ -6,43 +6,59 @@ from src.gui.component.SMSTextBox import SMSTextBox
 from src.gui.component.SMSLabel import SMSLabel
 from src.gui.view.SMSView import SMSView
 
+from src.service.SettingsService import SettingsService
 from src.service.FileManager import FileManager
 from src.service.FolderManager import FolderManager
-from src.configuration.ServiceManager import ServiceManager
 from src.event.LogActivityEvent import LogActivityEvent
 from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
 from src.event.SortFilesEvent import SortFilesEvent
 from src.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
+from src.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
 
 class SMSHomeView(SMSView):
     def __init__(
         self, 
         container: Tk,
-        serviceManager: ServiceManager = ServiceManager()
+        settingsService: SettingsService,
+        fileManager: FileManager,
+        folderManager: FolderManager,
+        logActivityEvent: LogActivityEvent,
+        removeDuplicatesEvent: RemoveDuplicatesEvent,
+        removeEmptyFoldersEvent: RemoveEmptyFoldersEvent,
+        removeEmptyFilesEvent: RemoveEmptyFilesEvent,
+        sortFilesEvent: SortFilesEvent
     ):
-        super().__init__(container)
+        self.settingsService = settingsService
+        self.fileManager = fileManager
+        self.folderManager = folderManager
+        self.logActivityEvent = logActivityEvent
+        self.removeDuplicatesEvent = removeDuplicatesEvent
+        self.removeEmptyFoldersEvent = removeEmptyFoldersEvent
+        self.removeEmptyFilesEvent = removeEmptyFilesEvent
+        self.sortFilesEvent = sortFilesEvent
 
-        self.fileManager = serviceManager.get("FileManager") # type: FileManager
-        self.folderManager = serviceManager.get("FolderManager") # type: FolderManager
-        logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
-        removeDuplicatesEvent = serviceManager.get("RemoveDuplicatesEvent") # type: RemoveDuplicatesEvent
-        removeEmptyFoldersEvent = serviceManager.get("RemoveEmptyFoldersEvent") # type: RemoveEmptyFoldersEvent
-        removeEmptyFilesEvent = serviceManager.get("RemoveEmptyFilesEvent") # type: RemoveEmptyFoldersEvent
-        sortFilesEvent = serviceManager.get("SortFilesEvent") # type: SortFilesEvent
+        self.backgroundColor = self.settingsService.getSetting("backgroundColor")
 
-        logActivityEvent.subscribe(self.__logOutput)
+        super().__init__(container=container, backgroundColor=self.backgroundColor)
 
-        removeDuplicatesEvent.subscribe(self.__showEntryInMainOutput)
-        sortFilesEvent.subscribe(self.__showEntryInMainOutput)
-        removeEmptyFilesEvent.subscribe(self.__showEntryInMainOutput)
-        removeEmptyFoldersEvent.subscribe(self.__showEntryInMainOutput)
+        self.createView()
 
-        mainText = SMSLabel(container=self, text="Select action to perform")
+    def createView(self):
+        fontColor = self.settingsService.getSetting("fontColor")
+
+        self.logActivityEvent.subscribe(self.__logOutput)
+        self.removeDuplicatesEvent.subscribe(self.__showEntryInMainOutput)
+        self.sortFilesEvent.subscribe(self.__showEntryInMainOutput)
+        self.removeEmptyFilesEvent.subscribe(self.__showEntryInMainOutput)
+        self.removeEmptyFoldersEvent.subscribe(self.__showEntryInMainOutput)
+
+        mainText = SMSLabel(container=self, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Select action to perform")
         mainText.grid(column=0, row=0, sticky='w')
 
         buttonFrame = SMSButtonContainer(
             container=self, 
-            direction="vertical", 
+            direction="vertical",
+            backgroundColor=self.backgroundColor,
             width=300, 
             height=500,
             padx=0,
@@ -51,17 +67,17 @@ class SMSHomeView(SMSView):
             buttonSpacingY=10
         )
         buttonFrame.setButtons([
-            SMSButton(buttonFrame, "Remove Empty Folders", self.__removeEmptyFolders),
-            SMSButton(buttonFrame, "Remove Empty Files", self.__removeEmptyFiles),
-            SMSButton(buttonFrame, "Remove duplicate files", self.__removeDuplicatesInMovedFiles),
-            SMSButton(buttonFrame, "Move Files to Sorted Folder", self.__moveFilesToSortedFolder),
+            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Remove Empty Folders", command=self.__removeEmptyFolders),
+            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Remove Empty Files", command=self.__removeEmptyFiles),
+            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Remove duplicate files", command=self.__removeDuplicatesInMovedFiles),
+            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Move Files to Sorted Folder", command=self.__moveFilesToSortedFolder),
         ])
         buttonFrame.grid(column=0, row=1, sticky='n')
 
-        self.output = SMSTextBox(container=self, height=40, width=140)
+        self.output = SMSTextBox(container=self, backgroundColor=self.backgroundColor, fontColor=fontColor, height=40, width=140)
         self.output.grid(column=1, row=1)
 
-        self.currentState = SMSLabel(container=self, text="Idle")
+        self.currentState = SMSLabel(container=self, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Idle")
         self.currentState.grid(column=0, row=2, sticky='w', columnspan=2)
 
     def __logOutput(self, text: str, maxLength: int=150):

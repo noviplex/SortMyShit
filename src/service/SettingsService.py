@@ -4,7 +4,7 @@ from src.entity.Settings import Settings
 
 class SettingsService:
     appSettings = Settings()
-    runDir = None
+    runDir: str = None
 
     def getSettings(self):
         try:

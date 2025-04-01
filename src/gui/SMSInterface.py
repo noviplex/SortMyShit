@@ -1,13 +1,10 @@
 from tkinter import Tk, font as tkFont
 
 from src.gui.view.SMSView import SMSView
-from src.gui.view.SMSHomeView import SMSHomeView
-from src.gui.SMSNavBar import SMSNavBar
 
 from src.event.ChangeViewEvent import ChangeViewEvent
 
-from src.configuration.ServiceManager import ServiceManager
-from src.configuration.ViewManager import ViewManager
+from src.manager.ViewManager import ViewManager
 
 from src.service.SettingsService import SettingsService
 
@@ -15,14 +12,11 @@ class SMSInterface:
     def __init__(
         self, 
         root: Tk,
-        serviceManager: ServiceManager = ServiceManager(),
-        viewManager: ViewManager = ViewManager()
+        settingsService: SettingsService,
+        changeViewEvent: ChangeViewEvent,
+        viewManager = ViewManager
     ):
         self.viewManager = viewManager
-
-        settingsService = serviceManager.get("SettingsService") # type: SettingsService
-        
-        changeViewEvent = serviceManager.get("ChangeViewEvent") # type: ChangeViewEvent
 
         changeViewEvent.subscribe(self.changeView)
 
@@ -34,10 +28,10 @@ class SMSInterface:
         root.resizable(width=False, height=False)
         root.configure(bg=settingsService.getSetting("backgroundColor"))
 
-        navbar = SMSNavBar(root)
+        navbar = self.viewManager.get("navBar")
         navbar.grid(row=0, column=0, sticky='w')
         
-        view = SMSHomeView(root)
+        view = self.viewManager.get("home")
         self.setView(view)
         
         root.mainloop()

@@ -3,15 +3,18 @@ from os import path as os_path, remove as os_remove
 from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
 from src.event.LogActivityEvent import LogActivityEvent
 
-from src.configuration.ServiceManager import ServiceManager
-
 from src.service.SettingsService import SettingsService
 
 class DuplicateSearcher:
-    def __init__(self, serviceManager: ServiceManager = ServiceManager()):
-        self.settingsService = serviceManager.get("SettingsService") # type: SettingsService
-        self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
-        self.removeDuplicatesEvent = serviceManager.get("RemoveDuplicatesEvent") # type: RemoveDuplicatesEvent
+    def __init__(
+            self, 
+            settingsService: SettingsService,
+            logActivityEvent: LogActivityEvent,
+            removeDuplicatesEvent: RemoveDuplicatesEvent
+    ):
+        self.settingsService = settingsService
+        self.logActivityEvent = logActivityEvent
+        self.removeDuplicatesEvent = removeDuplicatesEvent
 
     def compareFileBinaries(self, allFiles, fileLookedUp):
         fileSizeThreshold = self.settingsService.getSetting("binaryComparisonLargeFilesThreshold")
