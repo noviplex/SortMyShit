@@ -1,32 +1,33 @@
 from json import load as json_load, dumps as json_dumps
 
-from src.entity.Settings import Settings
+from src.domain.entity.Settings import Settings
+from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 
-class SettingsService:
+class SettingsRepository(SettingsRepositoryInterface):
     appSettings = Settings()
     runDir: str = None
 
-    def getSettings(self):
+    def loadAll(self):
         try:
             jsonUserSettingsFile = open(self.runDir + "/settings.json")
             userSettings = json_load(jsonUserSettingsFile)
             jsonUserSettingsFile.close()
             return userSettings 
         except:
-            self.saveSettings(self.appSettings.defaultUserSettings)
+            self.save(self.appSettings.defaultUserSettings)
             return self.appSettings.defaultUserSettings
- 
-    def saveSettings(self, userSettings):
+
+    def save(self, userSettings):
         jsonUserSettingsFile = open(self.runDir + "/settings.json", "w+")
         jsonUserSettingsFile.write(json_dumps(userSettings))
         jsonUserSettingsFile.close()
 
-    def getSetting(self, name:str):
-        userSettings = self.getSettings()
+    def loadOne(self, name:str):
+        userSettings = self.loadAll()
         return userSettings[name]
 
-    def setSetting(self, name: str, value: str):
-        userSettings = self.getSettings()
+    def updateOne(self, name: str, value: str):
+        userSettings = self.loadAll()
         userSettings[name] = value
         
-        self.saveSettings(userSettings)
+        self.save(userSettings)

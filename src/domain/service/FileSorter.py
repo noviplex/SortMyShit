@@ -1,7 +1,7 @@
 from os import system as os_system
 
-from src.event.LogActivityEvent import LogActivityEvent
-from src.event.SortFilesEvent import SortFilesEvent
+from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.SortFilesEvent import SortFilesEvent
 
 class FileSorter:
     def __init__(self, sortFilesEvent: SortFilesEvent, logActivityEvent: LogActivityEvent):

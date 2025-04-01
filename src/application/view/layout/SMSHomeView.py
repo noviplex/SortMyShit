@@ -1,25 +1,26 @@
 from tkinter import Tk, constants as tk_constants
 
-from src.gui.component.SMSButton import SMSButton
-from src.gui.component.SMSButtonContainer import SMSButtonContainer
-from src.gui.component.SMSTextBox import SMSTextBox
-from src.gui.component.SMSLabel import SMSLabel
-from src.gui.view.SMSView import SMSView
+from src.application.component.SMSButton import SMSButton
+from src.application.component.SMSButtonContainer import SMSButtonContainer
+from src.application.component.SMSTextBox import SMSTextBox
+from src.application.component.SMSLabel import SMSLabel
+from src.application.view.layout.SMSView import SMSView
 
-from src.service.SettingsService import SettingsService
-from src.service.FileManager import FileManager
-from src.service.FolderManager import FolderManager
-from src.event.LogActivityEvent import LogActivityEvent
-from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.event.SortFilesEvent import SortFilesEvent
-from src.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
-from src.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
+from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
+from src.domain.event.SortFilesEvent import SortFilesEvent
+from src.domain.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
+from src.domain.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
+from src.domain.service.FileManager import FileManager
+from src.domain.service.FolderManager import FolderManager
+
+from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
 class SMSHomeView(SMSView):
     def __init__(
         self, 
         container: Tk,
-        settingsService: SettingsService,
+        settingsRepository: SettingsRepository,
         fileManager: FileManager,
         folderManager: FolderManager,
         logActivityEvent: LogActivityEvent,
@@ -28,7 +29,7 @@ class SMSHomeView(SMSView):
         removeEmptyFilesEvent: RemoveEmptyFilesEvent,
         sortFilesEvent: SortFilesEvent
     ):
-        self.settingsService = settingsService
+        self.settingsRepository = settingsRepository
         self.fileManager = fileManager
         self.folderManager = folderManager
         self.logActivityEvent = logActivityEvent
@@ -37,14 +38,14 @@ class SMSHomeView(SMSView):
         self.removeEmptyFilesEvent = removeEmptyFilesEvent
         self.sortFilesEvent = sortFilesEvent
 
-        self.backgroundColor = self.settingsService.getSetting("backgroundColor")
+        self.backgroundColor = self.settingsRepository.loadOne("backgroundColor")
 
         super().__init__(container=container, backgroundColor=self.backgroundColor)
 
         self.createView()
 
     def createView(self):
-        fontColor = self.settingsService.getSetting("fontColor")
+        fontColor = self.settingsRepository.loadOne("fontColor")
 
         self.logActivityEvent.subscribe(self.__logOutput)
         self.removeDuplicatesEvent.subscribe(self.__showEntryInMainOutput)

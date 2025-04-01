@@ -8,7 +8,6 @@ class Settings:
         "software": ["deb", "exe", "dmg", "pkg", "iso", "img", "apk", "rpm", "pat"],
         "configuration": ["json", "so", "ovpn"],
     }
-    settings = None,
     defaultUserSettings = {
         "fontColor": "#BDB6D0",
         "backgroundColor": "#46464C",

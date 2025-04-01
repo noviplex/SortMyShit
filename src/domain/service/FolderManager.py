@@ -1,27 +1,26 @@
 from os import rmdir as os_rmdir, walk as os_walk
 
-from src.event.LogActivityEvent import LogActivityEvent
-from src.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
-
-from src.service.SettingsService import SettingsService
+from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
+from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 
 class FolderManager:
     def __init__(
             self, 
             logActivityEvent: LogActivityEvent,
             removeEmptyFoldersEvent: RemoveEmptyFoldersEvent,
-            settingsService: SettingsService
+            settingsRepository: SettingsRepositoryInterface
     ):
         self.logActivityEvent = logActivityEvent
         self.removeEmptyFoldersEvent = removeEmptyFoldersEvent
-        self.settingsService = settingsService
+        self.settingsRepository = settingsRepository
 
     def removeEmptyFolder(self):
         emptyFoldersCount = 0
         self.logActivityEvent.trigger("Begin empty folders removal")
 
-        for root, dirs, files in os_walk(self.settingsService.getSetting("folderToProcess")): 
-            if not len(dirs) and not len(files) and not root == self.settingsService.getSetting("folderToProcess"): 
+        for root, dirs, files in os_walk(self.settingsRepository.loadOne("folderToProcess")): 
+            if not len(dirs) and not len(files) and not root == self.settingsRepository.loadOne("folderToProcess"): 
                 os_rmdir(root)
                 emptyFoldersCount += 1
 

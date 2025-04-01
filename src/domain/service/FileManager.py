@@ -1,18 +1,17 @@
 from os import path as os_path, walk as os_walk, mkdir as os_mkdir, remove as os_remove
 from glob import glob
 
-from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
-from src.event.LogActivityEvent import LogActivityEvent
-
-from src.service.SettingsService import SettingsService
-from src.service.DuplicateSearcher import DuplicateSearcher
-from src.service.FileSorter import FileSorter
+from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
+from src.domain.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
+from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.service.DuplicateSearcher import DuplicateSearcher
+from src.domain.service.FileSorter import FileSorter
+from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 
 class FileManager:
     def __init__(
             self, 
-            settingsService: SettingsService,
+            settingsRepository: SettingsRepositoryInterface,
             duplicateSearcher: DuplicateSearcher,
             fileSorter: FileSorter,
             logActivityEvent: LogActivityEvent,
@@ -24,11 +23,11 @@ class FileManager:
         self.logActivityEvent = logActivityEvent
         self.removeEmptyFilesEvent = removeEmptyFilesEvent
         self.removeDuplicatesEvent = removeDuplicatesEvent
-        self.settingsService = settingsService
+        self.settingsRepository = settingsRepository
 
     def removeEmptyFiles(self):
         # TODO add param to pick folder from which removing empty files
-        allFiles = self.__fetchAllFiles(self.settingsService.getSetting("removeDuplicatesFolder"), skipEmptyFiles=False)
+        allFiles = self.__fetchAllFiles(self.settingsRepository.loadOne("removeDuplicatesFolder"), skipEmptyFiles=False)
 
         for file in allFiles:
             if not os_path.isfile(file["fileFullPath"]):
@@ -45,7 +44,7 @@ class FileManager:
 
 
     def moveFilesToSortedFolder(self):
-        destinationFolder = self.settingsService.getSetting("destinationFolder")
+        destinationFolder = self.settingsRepository.loadOne("destinationFolder")
 
         self.logActivityEvent.trigger("Begin moving files to sorted folder")
             
@@ -53,17 +52,17 @@ class FileManager:
             self.logActivityEvent.trigger("Creating folder " + destinationFolder)
             os_mkdir(destinationFolder)
 
-        for category in self.settingsService.appSettings.defaultTypeMapping:
+        for category in self.settingsRepository.appSettings.defaultTypeMapping:
             categoryDestinationFolder = destinationFolder + "/" + category
 
             if os_path.isdir(categoryDestinationFolder) == False:
                 self.logActivityEvent.trigger("Creating subfolder " + categoryDestinationFolder)
                 os_mkdir(categoryDestinationFolder)
 
-            for extension in self.settingsService.appSettings.defaultTypeMapping[category]:
-                filesFullPath = [y for x in os_walk(self.settingsService.getSetting("folderToProcess")) for y in glob(os_path.join(x[0], '*.' + extension))]
+            for extension in self.settingsRepository.appSettings.defaultTypeMapping[category]:
+                filesFullPath = [y for x in os_walk(self.settingsRepository.loadOne("folderToProcess")) for y in glob(os_path.join(x[0], '*.' + extension))]
 
-                if self.settingsService.getSetting("keepOriginalFiles") == True:
+                if self.settingsRepository.loadOne("keepOriginalFiles") == True:
                     self.fileSorter.copyFile(filesFullPath, categoryDestinationFolder)
                 else:
                     self.fileSorter.moveFile(filesFullPath, categoryDestinationFolder)
@@ -74,7 +73,7 @@ class FileManager:
 
         self.logActivityEvent.trigger("Fetching files")
 
-        allFiles = self.__fetchAllFiles(self.settingsService.getSetting("removeDuplicatesFolder"))
+        allFiles = self.__fetchAllFiles(self.settingsRepository.loadOne("removeDuplicatesFolder"))
 
         self.logActivityEvent.trigger("Processing files")
 
@@ -83,7 +82,7 @@ class FileManager:
             if not os_path.isfile(file["fileFullPath"]):
                 continue
 
-            if (self.settingsService.getSetting("binarySearch") == True):
+            if (self.settingsRepository.loadOne("binarySearch") == True):
                 self.duplicateSearcher.compareFileBinaries(allFiles, file)
             else:
                 self.duplicateSearcher.compareFileNames(allFiles, file)
@@ -106,9 +105,9 @@ class FileManager:
                 continue
 
             if (
-                os_path.getsize(fileFullPath) > self.settingsService.getSetting("binaryComparisonLargeFilesThreshold")
-                and self.settingsService.getSetting("binarySearch") == True 
-                and self.settingsService.getSetting("binarySearchLargeFiles") == False
+                os_path.getsize(fileFullPath) > self.settingsRepository.loadOne("binaryComparisonLargeFilesThreshold")
+                and self.settingsRepository.loadOne("binarySearch") == True 
+                and self.settingsRepository.loadOne("binarySearchLargeFiles") == False
                 and skipLargeFiles
             ):
                 self.removeDuplicatesEvent.trigger("Skipping large file " + fileFullPath)

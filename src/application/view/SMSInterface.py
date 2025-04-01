@@ -1,18 +1,18 @@
 from tkinter import Tk, font as tkFont
 
-from src.gui.view.SMSView import SMSView
+from src.application.view.layout.SMSView import SMSView
 
-from src.event.ChangeViewEvent import ChangeViewEvent
+from src.domain.event.ChangeViewEvent import ChangeViewEvent
+
+from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
 from src.manager.ViewManager import ViewManager
-
-from src.service.SettingsService import SettingsService
 
 class SMSInterface:
     def __init__(
         self, 
         root: Tk,
-        settingsService: SettingsService,
+        settingsRepository: SettingsRepository,
         changeViewEvent: ChangeViewEvent,
         viewManager = ViewManager
     ):
@@ -26,7 +26,7 @@ class SMSInterface:
         root.title("SortMyShit")
         root.geometry('1600x900')
         root.resizable(width=False, height=False)
-        root.configure(bg=settingsService.getSetting("backgroundColor"))
+        root.configure(bg=settingsRepository.loadOne("backgroundColor"))
 
         navbar = self.viewManager.get("navBar")
         navbar.grid(row=0, column=0, sticky='w')
