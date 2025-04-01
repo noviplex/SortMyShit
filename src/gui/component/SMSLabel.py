@@ -1,19 +1,20 @@
 from tkinter import Tk, Label, StringVar
 
-from src.service.SettingsService import SettingsService
-
-from src.configuration.ServiceManager import ServiceManager
-
 class SMSLabel(Label):
-    def __init__(self, container: Tk, text: str, serviceManager: ServiceManager = ServiceManager()):
-        settingsService = serviceManager.get("SettingsService") # type: SettingsService
+    def __init__(
+        self, 
+        container: Tk,
+        text: str,
+        backgroundColor: str,
+        fontColor: str
+    ):
 
         self.textVariable = StringVar(container, text)
 
         super().__init__(
             master=container,
-            bg=settingsService.getSetting("backgroundColor"),
-            fg=settingsService.getSetting("fontColor"),
+            bg=backgroundColor,
+            fg=fontColor,
             textvariable=self.textVariable,
             text=text,
             padx=10,

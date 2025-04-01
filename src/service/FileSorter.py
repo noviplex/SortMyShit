@@ -3,12 +3,10 @@ from os import system as os_system
 from src.event.LogActivityEvent import LogActivityEvent
 from src.event.SortFilesEvent import SortFilesEvent
 
-from src.configuration.ServiceManager import ServiceManager
-
 class FileSorter:
-    def __init__(self, serviceManager: ServiceManager = ServiceManager()):
-        self.sortFilesEvent = serviceManager.get("SortFilesEvent") # type: SortFilesEvent
-        self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
+    def __init__(self, sortFilesEvent: SortFilesEvent, logActivityEvent: LogActivityEvent):
+        self.sortFilesEvent = sortFilesEvent
+        self.logActivityEvent = logActivityEvent
 
     def moveFile(self, filesFullPath: str, categoryDestinationFolder: str):                    
         self.__moveOrCopyFile("rm", filesFullPath, categoryDestinationFolder)

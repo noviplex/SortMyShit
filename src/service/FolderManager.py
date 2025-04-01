@@ -5,14 +5,16 @@ from src.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
 
 from src.service.SettingsService import SettingsService
 
-from src.configuration.ServiceManager import ServiceManager
-
 class FolderManager:
-    def __init__(self, serviceManager: ServiceManager = ServiceManager()):
-        self.logActivityEvent = serviceManager.get("SettingsService") # type: SettingsService
-        self.logActivityEvent = serviceManager.get("LogActivityEvent") # type: LogActivityEvent
-        self.removeEmptyFoldersEvent = serviceManager.get("RemoveEmptyFoldersEvent") # type: RemoveEmptyFoldersEvent
-        self.settingsService = serviceManager.get("SettingsService") # type: SettingsService
+    def __init__(
+            self, 
+            logActivityEvent: LogActivityEvent,
+            removeEmptyFoldersEvent: RemoveEmptyFoldersEvent,
+            settingsService: SettingsService
+    ):
+        self.logActivityEvent = logActivityEvent
+        self.removeEmptyFoldersEvent = removeEmptyFoldersEvent
+        self.settingsService = settingsService
 
     def removeEmptyFolder(self):
         emptyFoldersCount = 0
