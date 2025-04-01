@@ -8,6 +8,7 @@ class ServiceManager:
 
     def __init__(self):
         self.serviceContainer = {}
+        self.aliases = {}
 
     def get(self, serviceName):
         return self.serviceContainer[serviceName]
@@ -23,12 +24,19 @@ class ServiceManager:
             for dependencyName in dependencies:
                 dependency = dependencies[dependencyName].annotation
 
-                if not dependency.__name__ in self.serviceContainer:
-                    instantiatedDependencies.append(self.registerService(dependency))
-                else:
+                if dependency.__name__ in self.aliases:
+                    dependency = self.aliases[dependency.__name__]
+
+                if dependency.__name__ in self.serviceContainer:
                     instantiatedDependencies.append(self.serviceContainer[dependency.__name__])
+                else:
+                    instantiatedDependencies.append(self.registerService(dependency))
+
             self.serviceContainer[service.__name__] = service(*instantiatedDependencies)
 
     def registerServices(self, services):
         for service in services:
             self.registerService(service)
+
+    def registerAliases(self, aliasServices):
+        self.aliases = aliasServices

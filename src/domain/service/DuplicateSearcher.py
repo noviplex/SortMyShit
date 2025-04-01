@@ -1,23 +1,23 @@
 from os import path as os_path, remove as os_remove
 
-from src.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
+from src.domain.event.LogActivityEvent import LogActivityEvent
 
-from src.service.SettingsService import SettingsService
+from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 
 class DuplicateSearcher:
     def __init__(
             self, 
-            settingsService: SettingsService,
+            settingsRepository: SettingsRepositoryInterface,
             logActivityEvent: LogActivityEvent,
             removeDuplicatesEvent: RemoveDuplicatesEvent
     ):
-        self.settingsService = settingsService
+        self.settingsRepository = settingsRepository
         self.logActivityEvent = logActivityEvent
         self.removeDuplicatesEvent = removeDuplicatesEvent
 
     def compareFileBinaries(self, allFiles, fileLookedUp):
-        fileSizeThreshold = self.settingsService.getSetting("binaryComparisonLargeFilesThreshold")
+        fileSizeThreshold = self.settingsRepository.loadOne("binaryComparisonLargeFilesThreshold")
 
         for file in allFiles:
             if not os_path.isfile(file["fileFullPath"]):
@@ -28,7 +28,7 @@ class DuplicateSearcher:
             if (
                 (
                     self.__filesComparedAreNotTooLarge(file, fileLookedUp, fileSizeThreshold)
-                    or self.settingsService.getSetting("binarySearchLargeFiles") == True
+                    or self.settingsRepository.loadOne("binarySearchLargeFiles") == True
                 )
                 and fileLookedUp["fileFullPath"] != file["fileFullPath"]
                 and fileLookedUp["filePartialContent"] == file["filePartialContent"]

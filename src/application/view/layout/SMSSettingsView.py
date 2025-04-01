@@ -1,22 +1,22 @@
-from tkinter import Tk, Frame, BooleanVar
+from tkinter import Tk, Frame, BooleanVar, StringVar
 
-from src.gui.view.SMSView import SMSView
-from src.gui.component.SMSLabel import SMSLabel
-from src.gui.component.SMSCheckButton import SMSCheckButton
-from src.gui.component.SMSInputWithLabel import SMSInputWithLabel
+from src.application.view.layout.SMSView import SMSView
+from src.application.component.SMSLabel import SMSLabel
+from src.application.component.SMSCheckButton import SMSCheckButton
+from src.application.component.SMSInputWithLabel import SMSInputWithLabel
 
-from src.service.SettingsService import SettingsService
+from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
 class SMSSettingsView(SMSView):
     def __init__(
         self, 
         container: Tk,
-        settingsService: SettingsService
+        settingsRepository: SettingsRepository
     ):
-        self.settingsService = settingsService
+        self.settingsRepository = settingsRepository
 
-        self.backgroundColor = self.settingsService.getSetting("backgroundColor")
-        self.fontColor = self.settingsService.getSetting("fontColor")
+        self.backgroundColor = self.settingsRepository.loadOne("backgroundColor")
+        self.fontColor = self.settingsRepository.loadOne("fontColor")
 
         super().__init__(container=container, backgroundColor=self.backgroundColor, height=500)
         
@@ -31,18 +31,17 @@ class SMSSettingsView(SMSView):
 
         Frame(self, bg=self.fontColor, height=1, bd=0).grid(row=2, column=0, columnspan=2, sticky="ew")
 
-        SMSInputWithLabel(
-            self, 
-            text="Folder to sort",
+
+        self.__createInputWithLabel(
+            text="Folder to Sort", 
             settingName="folderToProcess",
-            settingsService=self.settingsService, # TODO exclude service injection from components
+            value=self.settingsRepository.loadOne("folderToProcess")
         ).grid(row=3, column=0, sticky='w')
 
-        SMSInputWithLabel(
-            self, 
+        self.__createInputWithLabel(
             text="Destination folder", 
             settingName="destinationFolder",
-            settingsService=self.settingsService, # TODO exclude service injection from components
+            value=self.settingsRepository.loadOne("destinationFolder")
         ).grid(row=4, column=0, sticky='w')
 
         self.__createSettingCheckButton(
@@ -54,11 +53,10 @@ class SMSSettingsView(SMSView):
 
         Frame(self, bg=self.fontColor, height=1, bd=0).grid(row=7, column=0, columnspan=2, sticky="ew")
 
-        SMSInputWithLabel(
-            self, 
+        self.__createInputWithLabel(
             text="Folder to Process", 
             settingName="removeDuplicatesFolder",
-            settingsService=self.settingsService, # TODO exclude service injection from components
+            value=self.settingsRepository.loadOne("removeDuplicatesFolder")
         ).grid(row=8, column=0, sticky='w')
 
         self.__createSettingCheckButton(
@@ -87,12 +85,34 @@ class SMSSettingsView(SMSView):
 
     def __createSettingCheckButton(self, settingName: str, text: str):
         booleanVar = BooleanVar()
-        booleanVar.set(self.settingsService.getSetting(settingName))
+        booleanVar.set(self.settingsRepository.loadOne(settingName))
         return SMSCheckButton(
             container=self, 
             text=text, 
             variable=booleanVar,
             backgroundColor=self.backgroundColor,
             fontColor=self.fontColor,
-            command=lambda: self.settingsService.setSetting(settingName, booleanVar.get())
+            command=lambda: self.settingsRepository.updateOne(settingName, booleanVar.get())
         )
+
+    def __createInputWithLabel(self, text: str, settingName: str, value: str):
+        settingVar = StringVar()
+        settingVar.set(value=value)
+        settingVar.trace_add(
+            "write", 
+            lambda name, index, mode, settingVar=settingVar: self.__changeInputWithLabelSetting(
+                settingName=settingName,
+                settingVar=settingVar
+            )
+        )
+
+        return SMSInputWithLabel(
+            container=self,
+            text=text, 
+            backgroundColor=self.backgroundColor,
+            fontColor=self.fontColor,
+            settingVar=settingVar,
+        )
+
+    def __changeInputWithLabelSetting(self, settingName: str, settingVar: StringVar):
+        self.settingsRepository.updateOne(settingName, settingVar.get())
