@@ -1,4 +1,4 @@
-from os import path as os_path 
+from os import path as os_path
 from sys import argv as sys_argv
 from tkinter import Tk
 
