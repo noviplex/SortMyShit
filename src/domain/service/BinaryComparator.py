@@ -24,7 +24,7 @@ class BinaryComparator:
 
         return False
 
-    def __getFileContent(self, filePath):
+    def __getFileContent(self, filePath: str):
         fileOpened = open(filePath, 'rb')
         fileContent = fileOpened.read()
         fileOpened.close()
