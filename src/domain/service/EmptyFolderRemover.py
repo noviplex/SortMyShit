@@ -4,9 +4,10 @@ from src.domain.event.LogActivityEvent import LogActivityEvent
 from src.domain.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
 from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 
+
 class EmptyFolderRemover:
     def __init__(
-            self, 
+            self,
             logActivityEvent: LogActivityEvent,
             removeEmptyFoldersEvent: RemoveEmptyFoldersEvent,
             settingsRepository: SettingsRepositoryInterface
@@ -20,8 +21,8 @@ class EmptyFolderRemover:
         emptyFoldersCount = 0
         self.logActivityEvent.trigger("Begin empty folders removal")
 
-        for root, dirs, files in os_walk(folderToProcess): 
-            if not len(dirs) and not len(files) and not root == folderToProcess: 
+        for root, dirs, files in os_walk(folderToProcess):
+            if not len(dirs) and not len(files) and not root == folderToProcess:
                 os_rmdir(root)
                 emptyFoldersCount += 1
 

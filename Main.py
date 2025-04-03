@@ -1,4 +1,4 @@
-from os import path as os_path 
+from os import path as os_path
 from sys import argv as sys_argv
 from tkinter import Tk
 
@@ -24,6 +24,7 @@ from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
 from src.manager.ServiceManager import ServiceManager
 from src.manager.ViewManager import ViewManager
+
 
 class SortMyShit:
     def main():
@@ -66,6 +67,7 @@ class SortMyShit:
             root,
             viewManager
         )
+
 
 if __name__ == "__main__":
     SortMyShit.main()

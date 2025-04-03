@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock, create_autospec
+from unittest.mock import Mock
 from pathlib import Path
 from os import path as os_path, remove as os_remove
 
@@ -11,11 +11,12 @@ from src.domain.service.DuplicateRemover import DuplicateRemover
 from src.domain.service.FileNameComparator import FileNameComparator
 from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 
+
 class DuplicateRemoverTest(TestCase):
     def setUp(self):
         self.binaryComparatorMock = Mock(BinaryComparator)
         self.settingsRepositoryMock = Mock(SettingsRepositoryInterface)
-        
+
         self.duplicateRemover = DuplicateRemover(
             Mock(LogActivityEvent),
             Mock(RemoveDuplicatesEvent),
@@ -31,7 +32,7 @@ class DuplicateRemoverTest(TestCase):
         self.fileInfo2 = self.__createFile(self.file2Path, "TEST_FILE_CONTENT")
 
         return super().setUp()
-    
+
     def tearDown(self):
         if os_path.isfile(self.file1Path):
             os_remove(self.file1Path)

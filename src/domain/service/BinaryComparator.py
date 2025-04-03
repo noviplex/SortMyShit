@@ -1,7 +1,6 @@
-from os import path as os_path
-
 from src.domain.entity.FileInfo import FileInfo
 from src.domain.event.LogActivityEvent import LogActivityEvent
+
 
 class BinaryComparator:
     def __init__(
@@ -17,12 +16,17 @@ class BinaryComparator:
             file2.fullPath != file1.fullPath
             and file2.partialContents == file1.partialContents
         ):
-            fileOpened = open(file1.fullPath, 'rb')
-            file2Opened = open(file2.fullPath, 'rb')
+            file1Content = self.__getFileContent(file1.fullPath)
+            file2Content = self.__getFileContent(file2.fullPath)
 
-            if (fileOpened.read() == file2Opened.read()):
+            if (file1Content == file2Content):
                 return True
-            fileOpened.close()
-            file2Opened.close()
-        
+
         return False
+
+    def __getFileContent(self, filePath: str):
+        fileOpened = open(filePath, 'rb')
+        fileContent = fileOpened.read()
+        fileOpened.close()
+
+        return fileContent

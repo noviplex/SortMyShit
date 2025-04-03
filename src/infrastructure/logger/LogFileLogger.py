@@ -5,11 +5,12 @@ from src.domain.event.LogActivityEvent import LogActivityEvent
 
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
+
 class LogFileLogger:
     def __init__(
-            self, 
+            self,
             logactivityEvent: LogActivityEvent,
-            settingsRepository: SettingsRepository
+            settingsRepository: SettingsRepository,
     ):
         self.logActivityEvent = logactivityEvent
         self.settingsRepository = settingsRepository

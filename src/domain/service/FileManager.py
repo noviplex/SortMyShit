@@ -9,9 +9,10 @@ from src.domain.service.DuplicateRemover import DuplicateRemover
 from src.domain.service.FileSorter import FileSorter
 from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 
+
 class FileManager:
     def __init__(
-            self, 
+            self,
             settingsRepository: SettingsRepositoryInterface,
             duplicateRemover: DuplicateRemover,
             fileSorter: FileSorter,
@@ -40,30 +41,29 @@ class FileManager:
             if len(fileContent) == 0:
                 os_remove(file.fullPath)
                 self.removeEmptyFilesEvent.trigger("Removed empty File " + file.fullPath)
-                
-        return allFiles
 
+        return allFiles
 
     def moveFilesToSortedFolder(self):
         destinationFolder = self.settingsRepository.loadOne("destinationFolder")
 
         self.logActivityEvent.trigger("Begin moving files to sorted folder")
-            
-        if os_path.isdir(destinationFolder) == False:
+
+        if os_path.isdir(destinationFolder) is False:
             self.logActivityEvent.trigger("Creating folder " + destinationFolder)
             os_mkdir(destinationFolder)
 
         for category in self.settingsRepository.appSettings.defaultTypeMapping:
             categoryDestinationFolder = destinationFolder + "/" + category
 
-            if os_path.isdir(categoryDestinationFolder) == False:
+            if os_path.isdir(categoryDestinationFolder) is False:
                 self.logActivityEvent.trigger("Creating subfolder " + categoryDestinationFolder)
                 os_mkdir(categoryDestinationFolder)
 
             for extension in self.settingsRepository.appSettings.defaultTypeMapping[category]:
                 filesFullPath = [y for x in os_walk(self.settingsRepository.loadOne("folderToProcess")) for y in glob(os_path.join(x[0], '*.' + extension))]
 
-                if self.settingsRepository.loadOne("keepOriginalFiles") == True:
+                if self.settingsRepository.loadOne("keepOriginalFiles") is True:
                     self.fileSorter.copyFile(filesFullPath, categoryDestinationFolder)
                 else:
                     self.fileSorter.moveFile(filesFullPath, categoryDestinationFolder)
@@ -73,17 +73,17 @@ class FileManager:
         self.logActivityEvent.trigger("Begin removing duplicates")
         self.logActivityEvent.trigger("Fetching files")
 
-        # TODO : give the choice to select from which folder removing duplicates 
+        # TODO : give the choice to select from which folder removing duplicates
         allFiles = self.__fetchAllFiles(self.settingsRepository.loadOne("removeDuplicatesFolder"))
 
         self.logActivityEvent.trigger("Processing files")
 
         for file in allFiles:
-            
+
             if not os_path.isfile(file.fullPath):
                 continue
 
-            if (self.settingsRepository.loadOne("binarySearch") == True):
+            if (self.settingsRepository.loadOne("binarySearch") is True):
                 self.duplicateRemover.removeFilesByIdenticalBinaryContent(allFiles, file)
             else:
                 self.duplicateRemover.removeFilesByIdenticalFileName(allFiles, file)
@@ -91,11 +91,11 @@ class FileManager:
         self.logActivityEvent.trigger("Done")
 
     def __fetchAllFiles(
-            self, 
+            self,
             folder,
-            skipEmptyFiles: bool = True, 
-            skipLargeFiles: bool = True
-    ) :
+            skipEmptyFiles: bool = True,
+            skipLargeFiles: bool = True,
+    ):
         allFileFullPaths = [y for x in os_walk(folder) for y in glob(os_path.join(x[0], '*.*'))]
 
         allFiles = []
@@ -106,8 +106,8 @@ class FileManager:
 
             if (
                 os_path.getsize(fileFullPath) > self.settingsRepository.loadOne("binaryComparisonLargeFilesThreshold")
-                and self.settingsRepository.loadOne("binarySearch") == True 
-                and self.settingsRepository.loadOne("binarySearchLargeFiles") == False
+                and self.settingsRepository.loadOne("binarySearch") is True
+                and self.settingsRepository.loadOne("binarySearchLargeFiles") is False
                 and skipLargeFiles
             ):
                 self.removeDuplicatesEvent.trigger("Skipping large file " + fileFullPath)

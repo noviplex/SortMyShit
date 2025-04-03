@@ -1,5 +1,6 @@
 from inspect import signature
 
+
 class ServiceManager:
     def __new__(serviceManager):
         if not hasattr(serviceManager, 'instance'):
@@ -12,7 +13,7 @@ class ServiceManager:
 
     def get(self, serviceName):
         return self.serviceContainer[serviceName]
-    
+
     def registerService(self, service):
         dependencies = signature(service).parameters
         if len(dependencies) == 0:

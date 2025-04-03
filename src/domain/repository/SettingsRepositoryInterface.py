@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class SettingsRepositoryInterface(ABC):
     @abstractmethod
     def loadAll(self):

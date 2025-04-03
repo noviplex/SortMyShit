@@ -1,4 +1,4 @@
-from tkinter import Tk, font as tkFont
+from tkinter import font as tkFont
 
 from src.application.view.SMSView import SMSView
 from src.application.component.SMSButton import SMSButton
@@ -10,9 +10,10 @@ from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
 from src.manager.ViewManager import ViewManager
 
+
 class SMSRenderer:
     def __init__(
-        self, 
+        self,
         settingsRepository: SettingsRepository,
         changeViewEvent: ChangeViewEvent,
     ):
@@ -35,23 +36,39 @@ class SMSRenderer:
         root.configure(bg=backgroundColor)
 
         navbar = SMSButtonContainer(
-            root, 
-            backgroundColor=backgroundColor, 
-            direction="horizontal", 
-            width=300, 
-            height=500, 
-            padx=10, 
-            pady=10
+            root,
+            backgroundColor=backgroundColor,
+            direction="horizontal",
+            width=300,
+            height=500,
+            padx=10,
+            pady=10,
         )
         navbar.setButtons([
-            SMSButton(navbar, backgroundColor=backgroundColor, fontColor=fontColor, text="Home", command=lambda: self.changeViewEvent.trigger('home'), width=10, height=1),
-            SMSButton(navbar, backgroundColor=backgroundColor, fontColor=fontColor, text="Settings", command=lambda: self.changeViewEvent.trigger('settings'), width=10, height=1),
+            SMSButton(
+                navbar,
+                backgroundColor=backgroundColor,
+                fontColor=fontColor,
+                text="Home",
+                command=lambda: self.changeViewEvent.trigger('home'),
+                width=10,
+                height=1,
+            ),
+            SMSButton(
+                navbar,
+                backgroundColor=backgroundColor,
+                fontColor=fontColor,
+                text="Settings",
+                command=lambda: self.changeViewEvent.trigger('settings'),
+                width=10,
+                height=1,
+            ),
         ])
         navbar.grid(row=0, column=0, sticky='w')
-        
+
         view = self.viewManager.get("home")
         self.setView(view)
-        
+
         root.mainloop()
 
     def setView(self, view: SMSView):

@@ -5,6 +5,7 @@ from src.domain.entity.FileInfo import FileInfo
 from src.domain.service.FileNameComparator import FileNameComparator
 from src.domain.event.LogActivityEvent import LogActivityEvent
 
+
 class FileNameComparatorTest(TestCase):
     def setUp(self):
         self.file1Path = "/tests/domain/service/FileNameComparatorTest/testFile1.txt"

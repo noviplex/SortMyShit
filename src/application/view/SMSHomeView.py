@@ -16,9 +16,10 @@ from src.domain.service.EmptyFolderRemover import EmptyFolderRemover
 
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
+
 class SMSHomeView(SMSView):
     def __init__(
-        self, 
+        self,
         container: Tk,
         settingsRepository: SettingsRepository,
         fileManager: FileManager,
@@ -27,7 +28,7 @@ class SMSHomeView(SMSView):
         removeDuplicatesEvent: RemoveDuplicatesEvent,
         removeEmptyFoldersEvent: RemoveEmptyFoldersEvent,
         removeEmptyFilesEvent: RemoveEmptyFilesEvent,
-        sortFilesEvent: SortFilesEvent
+        sortFilesEvent: SortFilesEvent,
     ):
         self.settingsRepository = settingsRepository
         self.fileManager = fileManager
@@ -40,7 +41,10 @@ class SMSHomeView(SMSView):
 
         self.backgroundColor = self.settingsRepository.loadOne("backgroundColor")
 
-        super().__init__(container=container, backgroundColor=self.backgroundColor)
+        super().__init__(
+            container=container,
+            backgroundColor=self.backgroundColor
+        )
 
         self.createView()
 
@@ -53,35 +57,74 @@ class SMSHomeView(SMSView):
         self.removeEmptyFilesEvent.subscribe(self.__showEntryInMainOutput)
         self.removeEmptyFoldersEvent.subscribe(self.__showEntryInMainOutput)
 
-        mainText = SMSLabel(container=self, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Select action to perform")
-        mainText.grid(column=0, row=0, sticky='w')
+        SMSLabel(
+            container=self,
+            backgroundColor=self.backgroundColor,
+            fontColor=fontColor,
+            text="Select action to perform",
+        ).grid(column=0, row=0, sticky='w')
 
         buttonFrame = SMSButtonContainer(
-            container=self, 
+            container=self,
             direction="vertical",
             backgroundColor=self.backgroundColor,
-            width=300, 
+            width=300,
             height=500,
             padx=0,
             pady=0,
             buttonSpacingX=10,
-            buttonSpacingY=10
+            buttonSpacingY=10,
         )
         buttonFrame.setButtons([
-            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Remove Empty Folders", command=self.__removeEmptyFolders),
-            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Remove Empty Files", command=self.__removeEmptyFiles),
-            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Remove duplicate files", command=self.__removeDuplicatesInMovedFiles),
-            SMSButton(buttonFrame, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Move Files to Sorted Folder", command=self.__moveFilesToSortedFolder),
+            SMSButton(
+                buttonFrame,
+                backgroundColor=self.backgroundColor,
+                fontColor=fontColor,
+                text="Remove Empty Folders",
+                command=self.__removeEmptyFolders,
+            ),
+            SMSButton(
+                buttonFrame,
+                backgroundColor=self.backgroundColor,
+                fontColor=fontColor,
+                text="Remove Empty Files",
+                command=self.__removeEmptyFiles,
+            ),
+            SMSButton(
+                buttonFrame,
+                backgroundColor=self.backgroundColor,
+                fontColor=fontColor,
+                text="Remove duplicate files",
+                command=self.__removeDuplicatesInMovedFiles
+            ),
+            SMSButton(
+                buttonFrame,
+                backgroundColor=self.backgroundColor,
+                fontColor=fontColor,
+                text="Move Files to Sorted Folder",
+                command=self.__moveFilesToSortedFolder
+            ),
         ])
         buttonFrame.grid(column=0, row=1, sticky='n')
 
-        self.output = SMSTextBox(container=self, backgroundColor=self.backgroundColor, fontColor=fontColor, height=40, width=140)
+        self.output = SMSTextBox(
+            container=self,
+            backgroundColor=self.backgroundColor,
+            fontColor=fontColor,
+            height=40,
+            width=140,
+        )
         self.output.grid(column=1, row=1)
 
-        self.currentState = SMSLabel(container=self, backgroundColor=self.backgroundColor, fontColor=fontColor, text="Idle")
+        self.currentState = SMSLabel(
+            container=self,
+            backgroundColor=self.backgroundColor,
+            fontColor=fontColor,
+            text="Idle",
+        )
         self.currentState.grid(column=0, row=2, sticky='w', columnspan=2)
 
-    def __logOutput(self, text: str, maxLength: int=150):
+    def __logOutput(self, text: str, maxLength: int = 150):
         text = text[:maxLength - 3] + "..." if len(text) > maxLength else text
         self.currentState.setText(text)
 

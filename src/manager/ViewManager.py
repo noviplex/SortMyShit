@@ -5,6 +5,7 @@ from src.manager.ServiceManager import ServiceManager
 
 from src.application.view.SMSView import SMSView
 
+
 class ViewManager:
     def __new__(viewManager):
         if not hasattr(viewManager, 'instance'):
@@ -19,7 +20,7 @@ class ViewManager:
 
     def get(self, viewName):
         return self.viewContainer[viewName]
-    
+
     def registerView(self, mainContainer: Tk, viewName: str, view: SMSView):
         if viewName not in self.viewContainer:
             dependencies = signature(view).parameters

@@ -1,5 +1,6 @@
 from tkinter import Tk, Frame
 
+
 class SMSButtonContainer(Frame):
     def __init__(
             self,
@@ -7,7 +8,7 @@ class SMSButtonContainer(Frame):
             height: int,
             width: int,
             backgroundColor: str,
-            direction: str="horizontal",
+            direction: str = "horizontal",
             padx=0,
             pady=0,
             buttonSpacingX=0,
@@ -22,7 +23,7 @@ class SMSButtonContainer(Frame):
             borderwidth=0,
             bg=backgroundColor,
             padx=padx,
-            pady=pady
+            pady=pady,
         )
 
         self.direction = direction
@@ -36,8 +37,8 @@ class SMSButtonContainer(Frame):
             isFirstOrLastButton = (index == 0 or index == lastButtonIndex)
 
             button.grid(
-                row=index if self.direction == "vertical" else 0, 
+                row=index if self.direction == "vertical" else 0,
                 column=index if self.direction == "horizontal" else 0,
                 padx=0 if isFirstOrLastButton and self.direction == "horizontal" else self.buttonSpacingX,
-                pady=0 if isFirstOrLastButton and self.direction == "vertical" else  self.buttonSpacingY
+                pady=0 if isFirstOrLastButton and self.direction == "vertical" else self.buttonSpacingY
             )
