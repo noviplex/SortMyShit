@@ -20,7 +20,7 @@ class BinaryComparatorTest(TestCase):
 
         return super().setUp()
 
-    def test_given_two_fileswith_same_content_when_comparing_then_returns_true(self):
+    def test_given_two_files_with_same_content_when_comparing_then_returns_true(self):
         file1 = open(self.file1Path)
         file2 = open(self.file2Path)
 

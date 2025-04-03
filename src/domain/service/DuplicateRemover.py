@@ -65,6 +65,6 @@ class DuplicateRemover:
             and os_path.getsize(file.fullPath) < fileSizeThreshold
         )
 
-    def __removeFile(self, file, fileLookedUp):
+    def __removeFile(self, file: FileInfo, fileLookedUp: FileInfo):
         os_remove(file.fullPath)
         self.__notifyDuplicateFound(file, fileLookedUp)
