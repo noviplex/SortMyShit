@@ -53,6 +53,7 @@ sh compile.sh
 ## VSCode support
 
 Comes pre-configured to run in debugging mode with VSCode 
+Comes pre-configured for testing using unittest with VSCode
 
 ## Contributing
 
