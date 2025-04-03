@@ -4,7 +4,7 @@ from src.application.component.SMSButton import SMSButton
 from src.application.component.SMSButtonContainer import SMSButtonContainer
 from src.application.component.SMSTextBox import SMSTextBox
 from src.application.component.SMSLabel import SMSLabel
-from src.application.view.layout.SMSView import SMSView
+from src.application.view.SMSView import SMSView
 
 from src.domain.event.LogActivityEvent import LogActivityEvent
 from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
@@ -12,7 +12,7 @@ from src.domain.event.SortFilesEvent import SortFilesEvent
 from src.domain.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
 from src.domain.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
 from src.domain.service.FileManager import FileManager
-from src.domain.service.FolderManager import FolderManager
+from src.domain.service.EmptyFolderRemover import EmptyFolderRemover
 
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
@@ -22,7 +22,7 @@ class SMSHomeView(SMSView):
         container: Tk,
         settingsRepository: SettingsRepository,
         fileManager: FileManager,
-        folderManager: FolderManager,
+        emptyFolderRemover: EmptyFolderRemover,
         logActivityEvent: LogActivityEvent,
         removeDuplicatesEvent: RemoveDuplicatesEvent,
         removeEmptyFoldersEvent: RemoveEmptyFoldersEvent,
@@ -31,7 +31,7 @@ class SMSHomeView(SMSView):
     ):
         self.settingsRepository = settingsRepository
         self.fileManager = fileManager
-        self.folderManager = folderManager
+        self.emptyFolderRemover = emptyFolderRemover
         self.logActivityEvent = logActivityEvent
         self.removeDuplicatesEvent = removeDuplicatesEvent
         self.removeEmptyFoldersEvent = removeEmptyFoldersEvent
@@ -92,7 +92,7 @@ class SMSHomeView(SMSView):
 
     def __removeEmptyFolders(self):
         self.__clearOutput()
-        self.folderManager.removeEmptyFolder()
+        self.emptyFolderRemover.removeEmptyFolders()
 
     def __removeEmptyFiles(self):
         self.__clearOutput()
