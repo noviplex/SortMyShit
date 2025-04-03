@@ -52,8 +52,12 @@ sh compile.sh
 
 ## VSCode support
 
-Comes pre-configured to run in debugging mode with VSCode 
+Comes pre-configured to run in debugging mode with VSCode
+
+Comes pre-configured with linting on vscode using flake8 
+
 Comes pre-configured for testing using unittest with VSCode
+
 
 ## Contributing
 
