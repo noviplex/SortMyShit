@@ -3,7 +3,7 @@ from tkinter import Tk
 
 from src.manager.ServiceManager import ServiceManager
 
-from src.application.view.layout.SMSView import SMSView
+from src.application.view.SMSView import SMSView
 
 class ViewManager:
     def __new__(viewManager):

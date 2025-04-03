@@ -8,9 +8,7 @@
             "request": "launch",
             "program": "Main.py",
             "console": "integratedTerminal",
-            "env": {
-                "PYTHONDONTWRITEBYTECODE": "1" 
-            }
+            "envFile": "${workspaceFolder}/.env",
         }
     ]
 }

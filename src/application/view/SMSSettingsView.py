@@ -1,6 +1,6 @@
 from tkinter import Tk, Frame, BooleanVar, StringVar
 
-from src.application.view.layout.SMSView import SMSView
+from src.application.view.SMSView import SMSView
 from src.application.component.SMSLabel import SMSLabel
 from src.application.component.SMSCheckButton import SMSCheckButton
 from src.application.component.SMSInputWithLabel import SMSInputWithLabel

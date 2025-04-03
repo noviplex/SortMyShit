@@ -9,4 +9,4 @@
 # Logs
 log/*
 
-settings.json
+./settings.json
