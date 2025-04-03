@@ -1,9 +1,10 @@
 from tkinter import Tk, StringVar, Entry
 
+
 class SMSEntry(Entry):
     def __init__(
-        self, 
-        container: Tk, 
+        self,
+        container: Tk,
         stringVar: StringVar,
         width: int,
         backgroundColor: str,
@@ -11,7 +12,7 @@ class SMSEntry(Entry):
     ):
 
         super().__init__(
-            master=container, 
+            master=container,
             textvariable=stringVar,
             background=backgroundColor,
             highlightcolor=fontColor,
@@ -19,5 +20,5 @@ class SMSEntry(Entry):
             border=0,
             borderwidth=0,
             width=width,
-            font="Arial 14"
+            font="Arial 14",
         )

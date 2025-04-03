@@ -1,18 +1,19 @@
 from tkinter import Text, constants as tk_constants
 
+
 class SMSTextBox(Text):
     def __init__(
-            self, 
-            container, 
+            self,
+            container,
             backgroundColor: str,
             fontColor: str,
-            text: str=None, 
-            width: int=50, 
-            height: int=2, 
-            disabled: bool=True,
+            text: str = None,
+            width: int = 50,
+            height: int = 2,
+            disabled: bool = True,
     ):
         super().__init__(
-            master=container, 
+            master=container,
             bg=backgroundColor,
             fg=fontColor,
             width=width,
@@ -24,8 +25,8 @@ class SMSTextBox(Text):
             pady=5,
         )
 
-        if disabled == True:
+        if disabled is True:
             self.config(state=tk_constants.DISABLED)
 
-        if text != None:
+        if text is not None:
             self.insert(tk_constants.INSERT, text)

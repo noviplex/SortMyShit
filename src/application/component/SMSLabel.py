@@ -1,12 +1,13 @@
 from tkinter import Tk, Label, StringVar
 
+
 class SMSLabel(Label):
     def __init__(
-        self, 
+        self,
         container: Tk,
         text: str,
         backgroundColor: str,
-        fontColor: str
+        fontColor: str,
     ):
 
         self.textVariable = StringVar(container, text)
@@ -18,7 +19,7 @@ class SMSLabel(Label):
             textvariable=self.textVariable,
             text=text,
             padx=10,
-            pady=10
+            pady=10,
         )
 
     def setText(self, text: str):

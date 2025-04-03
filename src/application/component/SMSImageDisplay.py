@@ -1,18 +1,19 @@
 from tkinter import Tk, Frame, Label
 from PIL import Image, ImageTk
 
+
 class SMSImageDisplay(Frame):
     def __init__(
-            self, 
-            container: Tk, 
+            self,
+            container: Tk,
             imagePath: str,
-            backgroundColor: str
-    ):        
+            backgroundColor: str,
+    ):
         super().__init__(
             master=container,
             bg=backgroundColor,
             padx=10,
-            pady=10
+            pady=10,
         )
 
         self.image = Image.open(imagePath)

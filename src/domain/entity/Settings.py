@@ -14,11 +14,11 @@ class Settings:
         "folderToProcess": "/path/to/folder/to/sort",
         "destinationFolder": "/path/to/destination/folder",
         "removeDuplicatesFolder": "/path/to/destination/folder",
-        "binarySearch": True, 
-        "binarySearchLargeFiles": False, 
-        "keepOriginalFiles": True, 
-        "logOutputInFile": True, 
+        "binarySearch": True,
+        "binarySearchLargeFiles": False,
+        "keepOriginalFiles": True,
+        "logOutputInFile": True,
         "askBeforeRemovingDuplicates": True,
         "askBeforeRemovingEmptyFolders": True,
-        "binaryComparisonLargeFilesThreshold": 5000000
+        "binaryComparisonLargeFilesThreshold": 5000000,
     }

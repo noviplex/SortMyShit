@@ -25,6 +25,7 @@ from src.infrastructure.repository.SettingsRepository import SettingsRepository
 from src.manager.ServiceManager import ServiceManager
 from src.manager.ViewManager import ViewManager
 
+
 class SortMyShit:
     def main():
         serviceManager = ServiceManager()
@@ -66,6 +67,7 @@ class SortMyShit:
             root,
             viewManager
         )
+
 
 if __name__ == "__main__":
     SortMyShit.main()

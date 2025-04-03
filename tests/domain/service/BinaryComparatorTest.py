@@ -7,6 +7,7 @@ from src.domain.entity.FileInfo import FileInfo
 from src.domain.event.LogActivityEvent import LogActivityEvent
 from src.domain.service.BinaryComparator import BinaryComparator
 
+
 class BinaryComparatorTest(TestCase):
     def setUp(self):
         self.file1Path = str(Path().resolve()) + "/tests/domain/service/BinaryComparatorTest/testFile1.txt"

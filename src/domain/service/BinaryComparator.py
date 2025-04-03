@@ -1,7 +1,6 @@
-from os import path as os_path
-
 from src.domain.entity.FileInfo import FileInfo
 from src.domain.event.LogActivityEvent import LogActivityEvent
+
 
 class BinaryComparator:
     def __init__(
@@ -24,5 +23,5 @@ class BinaryComparator:
                 return True
             fileOpened.close()
             file2Opened.close()
-        
+
         return False
