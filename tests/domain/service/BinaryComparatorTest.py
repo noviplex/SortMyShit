@@ -24,32 +24,38 @@ class BinaryComparatorTest(TestCase):
         file1 = open(self.file1Path)
         file2 = open(self.file2Path)
 
-        self.assertTrue(self.binaryComparator.compare(
-            FileInfo(self.file1Path, file1.read()),
-            FileInfo(self.file2Path, file2.read()),
-        ))
+        file1Contents = file1.read()
+        file2Contents = file2.read()
 
         file1.close()
         file2.close()
+
+        self.assertTrue(self.binaryComparator.compare(
+            FileInfo(self.file1Path, file1Contents),
+            FileInfo(self.file2Path, file2Contents),
+        ))
 
     def test_given_two_files_with_different_content_when_comparing_then_returns_false(self):
         file1 = open(self.file1Path)
         file3 = open(self.file3Path)
 
-        self.assertFalse(self.binaryComparator.compare(
-            FileInfo(self.file1Path, file1.read()),
-            FileInfo(self.file3Path, file3.read()),
-        ))
+        file1Contents = file1.read()
+        file3Contents = file3.read()
 
         file1.close()
         file3.close()
 
-    def test_given_same_file_twice_when_comparing_then_returns_false(self):
-        file1 = open(self.file1Path)
-
         self.assertFalse(self.binaryComparator.compare(
-            FileInfo(self.file1Path, file1.read()),
-            FileInfo(self.file1Path, file1.read()),
+            FileInfo(self.file1Path, file1Contents),
+            FileInfo(self.file3Path, file3Contents),
         ))
 
+    def test_given_same_file_twice_when_comparing_then_returns_false(self):
+        file1 = open(self.file1Path)
+        file1Contents = file1.read()
         file1.close()
+
+        self.assertFalse(self.binaryComparator.compare(
+            FileInfo(self.file1Path, file1Contents),
+            FileInfo(self.file1Path, file1Contents),
+        ))
