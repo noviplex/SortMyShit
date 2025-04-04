@@ -1,7 +1,7 @@
 from datetime import datetime
 from os import path as os_path, mkdir as os_mkdir
 
-from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.application.service.EventManager import EventManager
 
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
@@ -9,14 +9,15 @@ from src.infrastructure.repository.SettingsRepository import SettingsRepository
 class LogFileLogger:
     def __init__(
             self,
-            logactivityEvent: LogActivityEvent,
+            eventManager: EventManager,
             settingsRepository: SettingsRepository,
     ):
-        self.logActivityEvent = logactivityEvent
+        self.eventManager = eventManager
         self.settingsRepository = settingsRepository
 
     def activateLogging(self):
-        self.logActivityEvent.subscribe(self.logInFile)
+        self.eventManager.subscribe("status", self.logInFile)
+        self.eventManager.subscribe("output", self.logInFile)
 
     def logInFile(self, logMessage):
         if not os_path.isdir(self.settingsRepository.runDir + "/log"):

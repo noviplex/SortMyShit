@@ -5,13 +5,8 @@ from tkinter import Tk
 from src.application.service.SMSRenderer import SMSRenderer
 from src.application.view.SMSHomeView import SMSHomeView
 from src.application.view.SMSSettingsView import SMSSettingsView
+from src.application.service.EventManager import EventManager
 
-from src.domain.event.LogActivityEvent import LogActivityEvent
-from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.domain.event.ChangeViewEvent import ChangeViewEvent
-from src.domain.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
-from src.domain.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
-from src.domain.event.SortFilesEvent import SortFilesEvent
 from src.domain.service.DuplicateRemover import DuplicateRemover
 from src.domain.service.FileManager import FileManager
 from src.domain.service.FileSorter import FileSorter
@@ -33,12 +28,7 @@ class SortMyShit:
         viewManager.setServiceManager(serviceManager)
 
         services = [
-            ChangeViewEvent,
-            RemoveDuplicatesEvent,
-            SortFilesEvent,
-            RemoveEmptyFilesEvent,
-            RemoveEmptyFoldersEvent,
-            LogActivityEvent,
+            EventManager,
             LogFileLogger,
             BinaryComparator,
             FileNameComparator,
@@ -50,7 +40,8 @@ class SortMyShit:
         ]
 
         serviceManager.registerAliases({
-            "SettingsRepositoryInterface": SettingsRepository
+            "SettingsRepositoryInterface": SettingsRepository,
+            "EventManagerInterface": EventManager,
         })
         serviceManager.registerServices(services)
         serviceManager.get("SettingsRepository").runDir = os_path.dirname(os_path.abspath(sys_argv[0]))
@@ -67,6 +58,8 @@ class SortMyShit:
             root,
             viewManager
         )
+
+        root.mainloop()
 
 
 if __name__ == "__main__":

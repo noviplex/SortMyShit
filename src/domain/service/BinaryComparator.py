@@ -1,16 +1,16 @@
+from src.domain.event.EventManagerInterface import EventManagerInterface
 from src.domain.entity.FileInfo import FileInfo
-from src.domain.event.LogActivityEvent import LogActivityEvent
 
 
 class BinaryComparator:
     def __init__(
         self,
-        logActivityEvent: LogActivityEvent,
+        eventManager: EventManagerInterface,
     ):
-        self.logActivityEvent = logActivityEvent
+        self.eventManager = eventManager
 
     def compare(self, file1: FileInfo, file2: FileInfo):
-        self.logActivityEvent.trigger("Comparing " + file2.fullPath + " with " + file1.fullPath)
+        self.eventManager.trigger("status", "Comparing " + file2.fullPath + " with " + file1.fullPath)
 
         if (
             file2.fullPath != file1.fullPath

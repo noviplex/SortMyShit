@@ -1,13 +1,14 @@
 from os import system as os_system
 
-from src.domain.event.LogActivityEvent import LogActivityEvent
-from src.domain.event.SortFilesEvent import SortFilesEvent
+from src.domain.event.EventManagerInterface import EventManagerInterface
 
 
 class FileSorter:
-    def __init__(self, sortFilesEvent: SortFilesEvent, logActivityEvent: LogActivityEvent):
-        self.sortFilesEvent = sortFilesEvent
-        self.logActivityEvent = logActivityEvent
+    def __init__(
+        self,
+        eventManager: EventManagerInterface,
+    ):
+        self.eventManager = eventManager
 
     def moveFile(self, filesFullPath: str, categoryDestinationFolder: str):
         self.__moveOrCopyFile("rm", filesFullPath, categoryDestinationFolder)
@@ -20,5 +21,4 @@ class FileSorter:
         for fileFullPath in filesFullPath:
 
             os_system(command + " \"" + fileFullPath + "\" " + categoryDestinationFolder)
-            self.sortFilesEvent.trigger(fileFullPath + " " + action + " successfully, now into " + categoryDestinationFolder)
-            self.logActivityEvent.trigger(fileFullPath + " " + action + " successfully, now into " + categoryDestinationFolder)
+            self.eventManager.trigger("output", fileFullPath + " " + action + " successfully, now into " + categoryDestinationFolder)

@@ -1,8 +1,7 @@
 from os import path as os_path, remove as os_remove
 
 from src.domain.entity.FileInfo import FileInfo
-from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.EventManagerInterface import EventManagerInterface
 from src.domain.service.BinaryComparator import BinaryComparator
 from src.domain.service.FileNameComparator import FileNameComparator
 from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
@@ -11,17 +10,15 @@ from src.domain.repository.SettingsRepositoryInterface import SettingsRepository
 class DuplicateRemover:
     def __init__(
             self,
-            logActivityEvent: LogActivityEvent,
-            removeDuplicatesEvent: RemoveDuplicatesEvent,
             binaryComparator: BinaryComparator,
             fileNameComparator: FileNameComparator,
             settingsRepository: SettingsRepositoryInterface,
+            eventManager: EventManagerInterface,
     ):
-        self.logActivityEvent = logActivityEvent
-        self.removeDuplicatesEvent = removeDuplicatesEvent
         self.binaryComparator = binaryComparator
         self.fileNameComparator = fileNameComparator
         self.settingsRepository = settingsRepository
+        self.eventManager = eventManager
 
     def removeFilesByIdenticalBinaryContent(
         self,
@@ -48,8 +45,10 @@ class DuplicateRemover:
                 break
 
     def __notifyDuplicateFound(self, file: FileInfo, fileLookedUp: FileInfo):
-        self.removeDuplicatesEvent.trigger("Removed " + file.fullPath + " duplicate of " + fileLookedUp.fullPath)
-        self.logActivityEvent.trigger("Removed " + file.fullPath + " duplicate of " + fileLookedUp.fullPath)
+        self.eventManager.trigger(
+            "output",
+            "Removed " + file.fullPath + " duplicate of " + fileLookedUp.fullPath
+        )
 
     def __filesMatchRequiredSize(self, file: FileInfo, fileLookedUp: FileInfo):
         return (

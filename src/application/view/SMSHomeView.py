@@ -4,13 +4,9 @@ from src.application.component.SMSButton import SMSButton
 from src.application.component.SMSButtonContainer import SMSButtonContainer
 from src.application.component.SMSTextBox import SMSTextBox
 from src.application.component.SMSLabel import SMSLabel
+from src.application.service.EventManager import EventManager
 from src.application.view.SMSView import SMSView
 
-from src.domain.event.LogActivityEvent import LogActivityEvent
-from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.domain.event.SortFilesEvent import SortFilesEvent
-from src.domain.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
-from src.domain.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
 from src.domain.service.FileManager import FileManager
 from src.domain.service.EmptyFolderRemover import EmptyFolderRemover
 
@@ -24,20 +20,12 @@ class SMSHomeView(SMSView):
         settingsRepository: SettingsRepository,
         fileManager: FileManager,
         emptyFolderRemover: EmptyFolderRemover,
-        logActivityEvent: LogActivityEvent,
-        removeDuplicatesEvent: RemoveDuplicatesEvent,
-        removeEmptyFoldersEvent: RemoveEmptyFoldersEvent,
-        removeEmptyFilesEvent: RemoveEmptyFilesEvent,
-        sortFilesEvent: SortFilesEvent,
+        eventManager: EventManager
     ):
         self.settingsRepository = settingsRepository
         self.fileManager = fileManager
         self.emptyFolderRemover = emptyFolderRemover
-        self.logActivityEvent = logActivityEvent
-        self.removeDuplicatesEvent = removeDuplicatesEvent
-        self.removeEmptyFoldersEvent = removeEmptyFoldersEvent
-        self.removeEmptyFilesEvent = removeEmptyFilesEvent
-        self.sortFilesEvent = sortFilesEvent
+        self.eventManager = eventManager
 
         self.backgroundColor = self.settingsRepository.loadOne("backgroundColor")
 
@@ -51,11 +39,8 @@ class SMSHomeView(SMSView):
     def createView(self):
         fontColor = self.settingsRepository.loadOne("fontColor")
 
-        self.logActivityEvent.subscribe(self.__logOutput)
-        self.removeDuplicatesEvent.subscribe(self.__showEntryInMainOutput)
-        self.sortFilesEvent.subscribe(self.__showEntryInMainOutput)
-        self.removeEmptyFilesEvent.subscribe(self.__showEntryInMainOutput)
-        self.removeEmptyFoldersEvent.subscribe(self.__showEntryInMainOutput)
+        self.eventManager.subscribe("status", self.__changeCurrentState)
+        self.eventManager.subscribe("output", self.__showEntryInMainOutput)
 
         SMSLabel(
             container=self,
@@ -124,7 +109,7 @@ class SMSHomeView(SMSView):
         )
         self.currentState.grid(column=0, row=2, sticky='w', columnspan=2)
 
-    def __logOutput(self, text: str, maxLength: int = 150):
+    def __changeCurrentState(self, text: str, maxLength: int = 150):
         text = text[:maxLength - 3] + "..." if len(text) > maxLength else text
         self.currentState.setText(text)
 

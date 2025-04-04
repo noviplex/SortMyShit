@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from pathlib import Path
 
 from src.domain.entity.FileInfo import FileInfo
-from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.EventManagerInterface import EventManagerInterface
 from src.domain.service.BinaryComparator import BinaryComparator
 
 
@@ -15,7 +15,7 @@ class BinaryComparatorTest(TestCase):
         self.file3Path = str(Path().resolve()) + "/tests/domain/service/BinaryComparatorTest/testFile3.txt"
 
         self.binaryComparator = BinaryComparator(
-            Mock(LogActivityEvent)
+            Mock(EventManagerInterface)
         )
 
         return super().setUp()
