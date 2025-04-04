@@ -1,10 +1,8 @@
-from tkinter import font as tkFont
+from tkinter import Tk, font as tkFont
 
 from src.application.view.SMSView import SMSView
 from src.application.component.SMSButton import SMSButton
 from src.application.component.SMSButtonContainer import SMSButtonContainer
-
-from src.domain.event.ChangeViewEvent import ChangeViewEvent
 
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
@@ -15,17 +13,14 @@ class SMSRenderer:
     def __init__(
         self,
         settingsRepository: SettingsRepository,
-        changeViewEvent: ChangeViewEvent,
     ):
         self.settingsRepository = settingsRepository
-        self.changeViewEvent = changeViewEvent
 
-    def render(self, root, viewManager: ViewManager):
+    def render(self, root: Tk, viewManager: ViewManager):
         backgroundColor = self.settingsRepository.loadOne("backgroundColor")
         fontColor = self.settingsRepository.loadOne("fontColor")
 
         self.viewManager = viewManager
-        self.changeViewEvent.subscribe(self.changeView)
 
         default_font = tkFont.nametofont("TkDefaultFont")
         default_font.configure(size=14)
@@ -50,7 +45,7 @@ class SMSRenderer:
                 backgroundColor=backgroundColor,
                 fontColor=fontColor,
                 text="Home",
-                command=lambda: self.changeViewEvent.trigger('home'),
+                command=lambda: self.changeView("home"),
                 width=10,
                 height=1,
             ),
@@ -59,17 +54,15 @@ class SMSRenderer:
                 backgroundColor=backgroundColor,
                 fontColor=fontColor,
                 text="Settings",
-                command=lambda: self.changeViewEvent.trigger('settings'),
+                command=lambda: self.changeView("settings"),
                 width=10,
                 height=1,
             ),
         ])
         navbar.grid(row=0, column=0, sticky='w')
 
-        view = self.viewManager.get("home")
-        self.setView(view)
-
-        root.mainloop()
+        self.view = self.viewManager.get("home")
+        self.setView(self.view)
 
     def setView(self, view: SMSView):
         self.view = view

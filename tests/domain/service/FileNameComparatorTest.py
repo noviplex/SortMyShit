@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from src.domain.entity.FileInfo import FileInfo
 from src.domain.service.FileNameComparator import FileNameComparator
-from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.EventManagerInterface import EventManagerInterface
 
 
 class FileNameComparatorTest(TestCase):
@@ -12,7 +12,7 @@ class FileNameComparatorTest(TestCase):
         self.file2Path = "/tests/domain/service/FileNameComparatorTest/subfolder/testFile1.txt"
 
         self.binaryComparator = FileNameComparator(
-            Mock(LogActivityEvent)
+            Mock(EventManagerInterface)
         )
 
         return super().setUp()

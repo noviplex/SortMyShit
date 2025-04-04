@@ -1,10 +1,10 @@
 {
-    "python.envFile": "${workspaceFolder}/.env",
+    "python.envFile": "${workspaceFolder}/.vscode/.env",
     "python.terminal.activateEnvironment": true,
     "python.testing.unittestArgs": [
         "--failfast",
         "--verbose",
-        "--start-directory", "./tests",
+        "--start-directory", "${workspaceFolder}/tests",
         "--pattern", "bootstrap.py",
     ],
     "flake8.enabled": true,

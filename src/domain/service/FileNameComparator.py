@@ -1,17 +1,17 @@
 from os import path as os_path
 
-from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.EventManagerInterface import EventManagerInterface
 
 
 class FileNameComparator:
     def __init__(
         self,
-        logActivityEvent: LogActivityEvent,
+        eventManager: EventManagerInterface,
     ):
-        self.logActivityEvent = logActivityEvent
+        self.eventManager = eventManager
 
     def compare(self, file1, file2):
-        self.logActivityEvent.trigger("Comparing " + file2.fullPath + " with " + file1.fullPath)
+        self.eventManager.trigger("status", "Comparing " + file2.fullPath + " with " + file1.fullPath)
 
         if (
             os_path.basename(file2.fullPath) == os_path.basename(file1.fullPath)

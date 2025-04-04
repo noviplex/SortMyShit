@@ -4,8 +4,7 @@ from pathlib import Path
 from os import path as os_path, remove as os_remove
 
 from src.domain.entity.FileInfo import FileInfo
-from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.EventManagerInterface import EventManagerInterface
 from src.domain.service.BinaryComparator import BinaryComparator
 from src.domain.service.DuplicateRemover import DuplicateRemover
 from src.domain.service.FileNameComparator import FileNameComparator
@@ -18,11 +17,10 @@ class DuplicateRemoverTest(TestCase):
         self.settingsRepositoryMock = Mock(SettingsRepositoryInterface)
 
         self.duplicateRemover = DuplicateRemover(
-            Mock(LogActivityEvent),
-            Mock(RemoveDuplicatesEvent),
             self.binaryComparatorMock,
             Mock(FileNameComparator),
-            self.settingsRepositoryMock
+            self.settingsRepositoryMock,
+            Mock(EventManagerInterface),
         )
 
         self.file1Path = str(Path().resolve()) + "/tests/domain/service/DuplicateRemoverTest/testFile1.txt"

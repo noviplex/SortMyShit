@@ -4,10 +4,9 @@ from pathlib import Path
 from os import path as os_path, remove as os_remove, makedirs as os_makedirs, rmdir as os_rmdir
 
 from src.domain.entity.FileInfo import FileInfo
-from src.domain.event.LogActivityEvent import LogActivityEvent
-from src.domain.event.RemoveEmptyFoldersEvent import RemoveEmptyFoldersEvent
 from src.domain.service.EmptyFolderRemover import EmptyFolderRemover
 from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
+from src.domain.event.EventManagerInterface import EventManagerInterface
 
 
 class EmptyFolderRemoverTest(TestCase):
@@ -27,8 +26,7 @@ class EmptyFolderRemoverTest(TestCase):
         settingsRepositoryMock.loadOne.side_effect = [rootFolder]
 
         self.emptyFolderRemover = EmptyFolderRemover(
-            Mock(LogActivityEvent),
-            Mock(RemoveEmptyFoldersEvent),
+            Mock(EventManagerInterface),
             settingsRepositoryMock,
         )
 

@@ -2,9 +2,7 @@ from os import path as os_path, walk as os_walk, mkdir as os_mkdir, remove as os
 from glob import glob
 
 from src.domain.entity.FileInfo import FileInfo
-from src.domain.event.RemoveDuplicatesEvent import RemoveDuplicatesEvent
-from src.domain.event.RemoveEmptyFilesEvent import RemoveEmptyFilesEvent
-from src.domain.event.LogActivityEvent import LogActivityEvent
+from src.domain.event.EventManagerInterface import EventManagerInterface
 from src.domain.service.DuplicateRemover import DuplicateRemover
 from src.domain.service.FileSorter import FileSorter
 from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
@@ -13,18 +11,14 @@ from src.domain.repository.SettingsRepositoryInterface import SettingsRepository
 class FileManager:
     def __init__(
             self,
-            settingsRepository: SettingsRepositoryInterface,
+            eventManager: EventManagerInterface,
             duplicateRemover: DuplicateRemover,
             fileSorter: FileSorter,
-            logActivityEvent: LogActivityEvent,
-            removeEmptyFilesEvent: RemoveEmptyFilesEvent,
-            removeDuplicatesEvent: RemoveDuplicatesEvent,
+            settingsRepository: SettingsRepositoryInterface,
     ):
+        self.eventManager = eventManager
         self.duplicateRemover = duplicateRemover
         self.fileSorter = fileSorter
-        self.logActivityEvent = logActivityEvent
-        self.removeEmptyFilesEvent = removeEmptyFilesEvent
-        self.removeDuplicatesEvent = removeDuplicatesEvent
         self.settingsRepository = settingsRepository
 
     def removeEmptyFiles(self):
@@ -40,24 +34,24 @@ class FileManager:
 
             if len(fileContent) == 0:
                 os_remove(file.fullPath)
-                self.removeEmptyFilesEvent.trigger("Removed empty File " + file.fullPath)
+                self.eventManager.trigger("output", "Removed empty File " + file.fullPath)
 
         return allFiles
 
     def moveFilesToSortedFolder(self):
         destinationFolder = self.settingsRepository.loadOne("destinationFolder")
 
-        self.logActivityEvent.trigger("Begin moving files to sorted folder")
+        self.eventManager.trigger("status", "Begin moving files to sorted folder")
 
         if os_path.isdir(destinationFolder) is False:
-            self.logActivityEvent.trigger("Creating folder " + destinationFolder)
+            self.eventManager.trigger("status", "Creating folder " + destinationFolder)
             os_mkdir(destinationFolder)
 
         for category in self.settingsRepository.appSettings.defaultTypeMapping:
             categoryDestinationFolder = destinationFolder + "/" + category
 
             if os_path.isdir(categoryDestinationFolder) is False:
-                self.logActivityEvent.trigger("Creating subfolder " + categoryDestinationFolder)
+                self.eventManager.trigger("status", "Creating subfolder " + categoryDestinationFolder)
                 os_mkdir(categoryDestinationFolder)
 
             for extension in self.settingsRepository.appSettings.defaultTypeMapping[category]:
@@ -67,16 +61,15 @@ class FileManager:
                     self.fileSorter.copyFile(filesFullPath, categoryDestinationFolder)
                 else:
                     self.fileSorter.moveFile(filesFullPath, categoryDestinationFolder)
-        self.logActivityEvent.trigger("Done")
+        self.eventManager.trigger("status", "Done")
 
     def removeDuplicatesInMovedFiles(self):
-        self.logActivityEvent.trigger("Begin removing duplicates")
-        self.logActivityEvent.trigger("Fetching files")
+        self.eventManager.trigger("status", "Fetching files")
 
         # TODO : give the choice to select from which folder removing duplicates
         allFiles = self.__fetchAllFiles(self.settingsRepository.loadOne("removeDuplicatesFolder"))
 
-        self.logActivityEvent.trigger("Processing files")
+        self.eventManager.trigger("status", "Processing files")
 
         for file in allFiles:
 
@@ -88,7 +81,7 @@ class FileManager:
             else:
                 self.duplicateRemover.removeFilesByIdenticalFileName(allFiles, file)
 
-        self.logActivityEvent.trigger("Done")
+        self.eventManager.trigger("status", "Done")
 
     def __fetchAllFiles(
             self,
@@ -110,14 +103,14 @@ class FileManager:
                 and self.settingsRepository.loadOne("binarySearchLargeFiles") is False
                 and skipLargeFiles
             ):
-                self.removeDuplicatesEvent.trigger("Skipping large file " + fileFullPath)
+                self.eventManager.trigger("output", "Skipping large file " + fileFullPath)
             else:
                 f = open(fileFullPath, 'rb')
 
                 fileContent = f.read(128)
 
                 if len(fileContent) == 0 and skipEmptyFiles:
-                    self.removeDuplicatesEvent.trigger("Empty File " + fileFullPath)
+                    self.eventManager.trigger("output", "Skipping empty File " + fileFullPath)
                 else:
                     allFiles.append(FileInfo(fileFullPath, fileContent))
                 f.close()
