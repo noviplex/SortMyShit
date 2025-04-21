@@ -9,8 +9,8 @@ class Settings:
         "configuration": ["json", "so", "ovpn"],
     }
     defaultUserSettings = {
-        "fontColor": "#BDB6D0",
-        "backgroundColor": "#46464C",
+        "color4": "#BDB6D0",
+        "color3": "#46464C",
         "folderToProcess": "/path/to/folder/to/sort",
         "destinationFolder": "/path/to/destination/folder",
         "removeDuplicatesFolder": "/path/to/destination/folder",

@@ -7,8 +7,10 @@ from src.application.component.SMSLabel import SMSLabel
 from src.application.service.EventManager import EventManager
 from src.application.view.SMSView import SMSView
 
+from src.domain.service.FileSorter import FileSorter
 from src.domain.service.FileManager import FileManager
 from src.domain.service.EmptyFolderRemover import EmptyFolderRemover
+from src.domain.service.EmptyFileRemover import EmptyFileRemover
 
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
@@ -20,39 +22,44 @@ class SMSHomeView(SMSView):
         settingsRepository: SettingsRepository,
         fileManager: FileManager,
         emptyFolderRemover: EmptyFolderRemover,
+        emptyFileRemover: EmptyFileRemover,
+        fileSorter: FileSorter,
         eventManager: EventManager
     ):
         self.settingsRepository = settingsRepository
         self.fileManager = fileManager
+        self.emptyFileRemover = emptyFileRemover
         self.emptyFolderRemover = emptyFolderRemover
+        self.fileSorter = fileSorter
         self.eventManager = eventManager
 
-        self.backgroundColor = self.settingsRepository.loadOne("backgroundColor")
+        self.color1 = self.settingsRepository.fetchOne("color1")
+        self.color3 = self.settingsRepository.fetchOne("color3")
 
         super().__init__(
             container=container,
-            backgroundColor=self.backgroundColor
+            bg=self.color1
         )
 
         self.createView()
 
     def createView(self):
-        fontColor = self.settingsRepository.loadOne("fontColor")
+        color4 = self.settingsRepository.fetchOne("color4")
 
         self.eventManager.subscribe("status", self.__changeCurrentState)
         self.eventManager.subscribe("output", self.__showEntryInMainOutput)
 
         SMSLabel(
             container=self,
-            backgroundColor=self.backgroundColor,
-            fontColor=fontColor,
+            bg=self.color1,
+            fg=color4,
             text="Select action to perform",
         ).grid(column=0, row=0, sticky='w')
 
         buttonFrame = SMSButtonContainer(
             container=self,
             direction="vertical",
-            backgroundColor=self.backgroundColor,
+            bg=self.color1,
             width=300,
             height=500,
             padx=0,
@@ -63,29 +70,29 @@ class SMSHomeView(SMSView):
         buttonFrame.setButtons([
             SMSButton(
                 buttonFrame,
-                backgroundColor=self.backgroundColor,
-                fontColor=fontColor,
+                color3=self.color3,
+                color4=color4,
                 text="Remove Empty Folders",
                 command=self.__removeEmptyFolders,
             ),
             SMSButton(
                 buttonFrame,
-                backgroundColor=self.backgroundColor,
-                fontColor=fontColor,
+                color3=self.color3,
+                color4=color4,
                 text="Remove Empty Files",
                 command=self.__removeEmptyFiles,
             ),
             SMSButton(
                 buttonFrame,
-                backgroundColor=self.backgroundColor,
-                fontColor=fontColor,
+                color3=self.color3,
+                color4=color4,
                 text="Remove duplicate files",
                 command=self.__removeDuplicatesInMovedFiles
             ),
             SMSButton(
                 buttonFrame,
-                backgroundColor=self.backgroundColor,
-                fontColor=fontColor,
+                color3=self.color3,
+                color4=color4,
                 text="Move Files to Sorted Folder",
                 command=self.__moveFilesToSortedFolder
             ),
@@ -94,8 +101,8 @@ class SMSHomeView(SMSView):
 
         self.output = SMSTextBox(
             container=self,
-            backgroundColor=self.backgroundColor,
-            fontColor=fontColor,
+            color3=self.color3,
+            color4=color4,
             height=40,
             width=140,
         )
@@ -103,8 +110,8 @@ class SMSHomeView(SMSView):
 
         self.currentState = SMSLabel(
             container=self,
-            backgroundColor=self.backgroundColor,
-            fontColor=fontColor,
+            fg=color4,
+            bg=self.color1,
             text="Idle",
         )
         self.currentState.grid(column=0, row=2, sticky='w', columnspan=2)
@@ -124,11 +131,11 @@ class SMSHomeView(SMSView):
 
     def __removeEmptyFiles(self):
         self.__clearOutput()
-        self.fileManager.removeEmptyFiles()
+        self.emptyFileRemover.removeEmptyFiles()
 
     def __moveFilesToSortedFolder(self):
         self.__clearOutput()
-        self.fileManager.moveFilesToSortedFolder()
+        self.fileSorter.moveFilesToSortedFolder()
 
     def __removeDuplicatesInMovedFiles(self):
         self.__clearOutput()

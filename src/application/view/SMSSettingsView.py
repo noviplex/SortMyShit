@@ -16,12 +16,14 @@ class SMSSettingsView(SMSView):
     ):
         self.settingsRepository = settingsRepository
 
-        self.backgroundColor = self.settingsRepository.loadOne("backgroundColor")
-        self.fontColor = self.settingsRepository.loadOne("fontColor")
+        self.color1 = self.settingsRepository.fetchOne("color1")
+        self.color2 = self.settingsRepository.fetchOne("color2")
+        self.color3 = self.settingsRepository.fetchOne("color3")
+        self.color4 = self.settingsRepository.fetchOne("color4")
 
         super().__init__(
             container=container,
-            backgroundColor=self.backgroundColor,
+            bg=self.color1,
             height=500,
         )
 
@@ -32,21 +34,21 @@ class SMSSettingsView(SMSView):
 
         SMSLabel(
             container=self,
-            backgroundColor=self.backgroundColor,
-            fontColor=self.fontColor,
+            bg=self.color1,
+            fg=self.color4,
             text="Settings"
         ).grid(row=0, column=0, sticky='w')
 
         SMSLabel(
             container=self,
-            backgroundColor=self.backgroundColor,
-            fontColor=self.fontColor,
+            bg=self.color1,
+            fg=self.color4,
             text="Sort Files"
         ).grid(row=1, column=0, sticky='w')
 
         Frame(
             self,
-            bg=self.fontColor,
+            bg=self.color2,
             height=1,
             bd=0
         ).grid(row=2, column=0, columnspan=2, sticky="ew")
@@ -54,13 +56,13 @@ class SMSSettingsView(SMSView):
         self.__createInputWithLabel(
             text="Folder to Sort",
             settingName="folderToProcess",
-            value=self.settingsRepository.loadOne("folderToProcess")
+            value=self.settingsRepository.fetchOne("folderToProcess")
         ).grid(row=3, column=0, sticky='w')
 
         self.__createInputWithLabel(
             text="Destination folder",
             settingName="destinationFolder",
-            value=self.settingsRepository.loadOne("destinationFolder")
+            value=self.settingsRepository.fetchOne("destinationFolder")
         ).grid(row=4, column=0, sticky='w')
 
         self.__createSettingCheckButton(
@@ -71,13 +73,13 @@ class SMSSettingsView(SMSView):
         SMSLabel(
             container=self,
             text="Remove Duplicates",
-            backgroundColor=self.backgroundColor,
-            fontColor=self.fontColor
+            bg=self.color1,
+            fg=self.color4,
         ).grid(row=6, column=0, sticky='w')
 
         Frame(
             self,
-            bg=self.fontColor,
+            bg=self.color2,
             height=1,
             bd=0
         ).grid(row=7, column=0, columnspan=2, sticky="ew")
@@ -85,7 +87,7 @@ class SMSSettingsView(SMSView):
         self.__createInputWithLabel(
             text="Folder to Process",
             settingName="removeDuplicatesFolder",
-            value=self.settingsRepository.loadOne("removeDuplicatesFolder")
+            value=self.settingsRepository.fetchOne("removeDuplicatesFolder")
         ).grid(row=8, column=0, sticky='w')
 
         self.__createSettingCheckButton(
@@ -100,14 +102,14 @@ class SMSSettingsView(SMSView):
 
         SMSLabel(
             container=self,
-            backgroundColor=self.backgroundColor,
-            fontColor=self.fontColor,
+            bg=self.color1,
+            fg=self.color4,
             text="General"
         ).grid(row=10, column=0, sticky='w')
 
         Frame(
             self,
-            bg=self.fontColor,
+            bg=self.color2,
             height=1,
             bd=0
         ).grid(row=11, column=0, columnspan=2, sticky="ew")
@@ -124,14 +126,14 @@ class SMSSettingsView(SMSView):
 
     def __createSettingCheckButton(self, settingName: str, text: str):
         booleanVar = BooleanVar()
-        booleanVar.set(self.settingsRepository.loadOne(settingName))
+        booleanVar.set(self.settingsRepository.fetchOne(settingName))
         return SMSCheckButton(
             container=self,
             text=text,
             variable=booleanVar,
-            backgroundColor=self.backgroundColor,
-            fontColor=self.fontColor,
-            command=lambda: self.settingsRepository.updateOne(settingName, booleanVar.get())
+            bg=self.color1,
+            fg=self.color4,
+            command=lambda: self.settingsRepository.saveOne(settingName, booleanVar.get())
         )
 
     def __createInputWithLabel(self, text: str, settingName: str, value: str):
@@ -149,8 +151,9 @@ class SMSSettingsView(SMSView):
         return SMSInputWithLabel(
             container=self,
             text=text,
-            backgroundColor=self.backgroundColor,
-            fontColor=self.fontColor,
+            entryBg=self.color3,
+            bg=self.color1,
+            fg=self.color4,
             settingVar=settingVar,
         )
 
@@ -159,4 +162,4 @@ class SMSSettingsView(SMSView):
         settingName: str,
         settingVar: StringVar
     ):
-        self.settingsRepository.updateOne(settingName, settingVar.get())
+        self.settingsRepository.saveOne(settingName, settingVar.get())

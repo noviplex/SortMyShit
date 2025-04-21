@@ -1,41 +1,36 @@
 from os import path as os_path
 
 from src.domain.event.EventManagerInterface import EventManagerInterface
-from src.domain.service.DuplicateRemover import DuplicateRemover
 from src.domain.repository.SettingsRepositoryInterface import SettingsRepositoryInterface
 from src.domain.repository.FileInfoRepositoryInterface import FileInfoRepositoryInterface
+from src.domain.entity.FileInfo import FileInfo
 
 
-class FileManager:
+class EmptyFileRemover:
     def __init__(
             self,
             eventManager: EventManagerInterface,
-            duplicateRemover: DuplicateRemover,
             settingsRepository: SettingsRepositoryInterface,
             fileInfoRepository: FileInfoRepositoryInterface,
     ):
         self.eventManager = eventManager
-        self.duplicateRemover = duplicateRemover
         self.settingsRepository = settingsRepository
         self.fileInfoRepository = fileInfoRepository
 
-    def removeDuplicatesInMovedFiles(self):
-        self.eventManager.trigger("status", "Fetching files")
-
-        # TODO : give the choice to select from which folder removing duplicates
+    def removeEmptyFiles(self):
+        # TODO add setting to pick folder from which removing empty files
         allFiles = self.fileInfoRepository.fetchAllFromFolder(
-            self.settingsRepository.fetchOne("removeDuplicatesFolder")
+            self.settingsRepository.fetchOne("removeDuplicatesFolder"),
+            skipEmptyFiles=False
         )
 
-        self.eventManager.trigger("status", "Processing files")
-
+        file: FileInfo
         for file in allFiles:
             if not os_path.isfile(file.fullPath):
                 continue
 
-            if (self.settingsRepository.fetchOne("binarySearch") is True):
-                self.duplicateRemover.removeFilesByIdenticalBinaryContent(allFiles, file)
-            else:
-                self.duplicateRemover.removeFilesByIdenticalFileName(allFiles, file)
+            if len(file.partialContents) == 0:
+                self.fileInfoRepository.removeOne(file.fullPath)
+                self.eventManager.trigger("output", "Removed empty File " + file.fullPath)
 
-        self.eventManager.trigger("status", "Done")
+        return allFiles

@@ -6,16 +6,16 @@ class SMSLabel(Label):
         self,
         container: Tk,
         text: str,
-        backgroundColor: str,
-        fontColor: str,
+        bg: str,
+        fg: str,
     ):
 
         self.textVariable = StringVar(container, text)
 
         super().__init__(
             master=container,
-            bg=backgroundColor,
-            fg=fontColor,
+            bg=bg,
+            fg=fg,
             textvariable=self.textVariable,
             text=text,
             padx=10,

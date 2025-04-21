@@ -11,11 +11,13 @@ from src.domain.service.DuplicateRemover import DuplicateRemover
 from src.domain.service.FileManager import FileManager
 from src.domain.service.FileSorter import FileSorter
 from src.domain.service.EmptyFolderRemover import EmptyFolderRemover
+from src.domain.service.EmptyFileRemover import EmptyFileRemover
 from src.domain.service.BinaryComparator import BinaryComparator
 from src.domain.service.FileNameComparator import FileNameComparator
 
 from src.infrastructure.logger.LogFileLogger import LogFileLogger
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
+from src.infrastructure.repository.FileInfoRepository import FileInfoRepository
 
 from src.manager.ServiceManager import ServiceManager
 from src.manager.ViewManager import ViewManager
@@ -29,18 +31,22 @@ class SortMyShit:
 
         services = [
             EventManager,
+            SettingsRepository,
+            FileInfoRepository,
             LogFileLogger,
-            BinaryComparator,
             FileNameComparator,
+            BinaryComparator,
             DuplicateRemover,
             FileSorter,
             FileManager,
             EmptyFolderRemover,
+            EmptyFileRemover,
             SMSRenderer,
         ]
 
         serviceManager.registerAliases({
             "SettingsRepositoryInterface": SettingsRepository,
+            "FileInfoRepositoryInterface": FileInfoRepository,
             "EventManagerInterface": EventManager,
         })
         serviceManager.registerServices(services)

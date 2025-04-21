@@ -3,17 +3,17 @@ from abc import ABC, abstractmethod
 
 class SettingsRepositoryInterface(ABC):
     @abstractmethod
-    def loadAll(self):
+    def fetchAll(self):
         pass
 
     @abstractmethod
-    def save(self, settings):
+    def fetchOne(self, name: str):
         pass
 
     @abstractmethod
-    def loadOne(self, name: str):
+    def saveAll(self, settings):
         pass
 
     @abstractmethod
-    def updateOne(self, name: str, setting: str):
+    def saveOne(self, name: str, setting: str):
         pass

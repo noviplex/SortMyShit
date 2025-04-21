@@ -17,8 +17,9 @@ class SMSRenderer:
         self.settingsRepository = settingsRepository
 
     def render(self, root: Tk, viewManager: ViewManager):
-        backgroundColor = self.settingsRepository.loadOne("backgroundColor")
-        fontColor = self.settingsRepository.loadOne("fontColor")
+        color1 = self.settingsRepository.fetchOne("color1")
+        color3 = self.settingsRepository.fetchOne("color3")
+        color4 = self.settingsRepository.fetchOne("color4")
 
         self.viewManager = viewManager
 
@@ -28,11 +29,11 @@ class SMSRenderer:
         root.title("SortMyShit")
         root.geometry('1600x900')
         root.resizable(width=False, height=False)
-        root.configure(bg=backgroundColor)
+        root.configure(bg=color1)
 
         navbar = SMSButtonContainer(
             root,
-            backgroundColor=backgroundColor,
+            bg=color1,
             direction="horizontal",
             width=300,
             height=500,
@@ -42,8 +43,8 @@ class SMSRenderer:
         navbar.setButtons([
             SMSButton(
                 navbar,
-                backgroundColor=backgroundColor,
-                fontColor=fontColor,
+                color3=color3,
+                color4=color4,
                 text="Home",
                 command=lambda: self.changeView("home"),
                 width=10,
@@ -51,8 +52,8 @@ class SMSRenderer:
             ),
             SMSButton(
                 navbar,
-                backgroundColor=backgroundColor,
-                fontColor=fontColor,
+                color3=color3,
+                color4=color4,
                 text="Settings",
                 command=lambda: self.changeView("settings"),
                 width=10,

@@ -7,7 +7,7 @@ class SMSButtonContainer(Frame):
             container: Tk,
             height: int,
             width: int,
-            backgroundColor: str,
+            bg: str,
             direction: str = "horizontal",
             padx=0,
             pady=0,
@@ -21,7 +21,7 @@ class SMSButtonContainer(Frame):
             width=width,
             border=0,
             borderwidth=0,
-            bg=backgroundColor,
+            bg=bg,
             padx=padx,
             pady=pady,
         )

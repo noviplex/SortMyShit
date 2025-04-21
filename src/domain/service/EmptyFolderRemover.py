@@ -14,7 +14,7 @@ class EmptyFolderRemover:
         self.settingsRepository = settingsRepository
 
     def removeEmptyFolders(self):
-        folderToProcess = self.settingsRepository.loadOne("folderToProcess")
+        folderToProcess = self.settingsRepository.fetchOne("folderToProcess")
         emptyFoldersCount = 0
         self.eventManager.trigger("status", "Begin empty folders removal")
 
