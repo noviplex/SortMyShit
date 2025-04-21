@@ -9,15 +9,16 @@ class SMSInputWithLabel(Frame):
         self,
         container: Tk,
         text: str,
-        backgroundColor: str,
-        fontColor: str,
+        entryBg: str,
+        bg: str,
+        fg: str,
         settingVar: StringVar,
     ):
         super().__init__(
             master=container,
             padx=10,
             pady=10,
-            background=backgroundColor,
+            background=bg,
             width=800,
             height=50,
         )
@@ -28,14 +29,14 @@ class SMSInputWithLabel(Frame):
 
         SMSLabel(
             container=self,
-            backgroundColor=backgroundColor,
-            fontColor=fontColor,
+            bg=bg,
+            fg=fg,
             text=text
         ).grid(row=0, column=0, sticky="w")
         SMSEntry(
             container=self,
-            backgroundColor=backgroundColor,
-            fontColor=fontColor,
+            bg=entryBg,
+            fg=fg,
             stringVar=settingVar,
             width=50
         ).grid(row=0, column=1, sticky="e")

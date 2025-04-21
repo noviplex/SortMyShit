@@ -23,7 +23,7 @@ class EmptyFolderRemoverTest(TestCase):
         self.fileInfo1 = self.__createFile(self.notEmptyFolderPath + "/filetest.txt", "TEST_FILE_CONTENT")
 
         settingsRepositoryMock = Mock(SettingsRepositoryInterface)
-        settingsRepositoryMock.loadOne.side_effect = [rootFolder]
+        settingsRepositoryMock.fetchOne.side_effect = [rootFolder]
 
         self.emptyFolderRemover = EmptyFolderRemover(
             Mock(EventManagerInterface),
@@ -48,7 +48,7 @@ class EmptyFolderRemoverTest(TestCase):
         file.write(fileContents)
         file.close()
 
-        return FileInfo(filePath, fileContents)
+        return FileInfo(filePath, "", 500, fileContents)
 
     def __clearFolders(self):
         if (os_path.isdir(self.emptyFolderPath)):

@@ -5,8 +5,8 @@ class SMSTextBox(Text):
     def __init__(
             self,
             container,
-            backgroundColor: str,
-            fontColor: str,
+            color3: str,
+            color4: str,
             text: str = None,
             width: int = 50,
             height: int = 2,
@@ -14,13 +14,13 @@ class SMSTextBox(Text):
     ):
         super().__init__(
             master=container,
-            bg=backgroundColor,
-            fg=fontColor,
+            bg=color3,
+            fg=color4,
             width=width,
             height=height,
             border=0,
             borderwidth=0,
-            highlightcolor=fontColor,
+            highlightcolor=color4,
             padx=5,
             pady=5,
         )

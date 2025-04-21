@@ -7,16 +7,16 @@ class SMSEntry(Entry):
         container: Tk,
         stringVar: StringVar,
         width: int,
-        backgroundColor: str,
-        fontColor: str,
+        bg: str,
+        fg: str,
     ):
 
         super().__init__(
             master=container,
             textvariable=stringVar,
-            background=backgroundColor,
-            highlightcolor=fontColor,
-            fg=fontColor,
+            background=bg,
+            highlightcolor=bg,
+            fg=fg,
             border=0,
             borderwidth=0,
             width=width,

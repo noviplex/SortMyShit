@@ -6,7 +6,7 @@ class SMSView(ABC, Frame):
     def __init__(
             self,
             container: Tk,
-            backgroundColor: str,
+            bg: str,
             width: int = 1600,
             height: int = 800,
     ):
@@ -17,7 +17,7 @@ class SMSView(ABC, Frame):
             padx=10,
             pady=10,
         )
-        self.configure(bg=backgroundColor)
+        self.configure(bg=bg)
 
     @abstractmethod
     def createView():

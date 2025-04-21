@@ -7,11 +7,11 @@ class SMSImageDisplay(Frame):
             self,
             container: Tk,
             imagePath: str,
-            backgroundColor: str,
+            color3: str,
     ):
         super().__init__(
             master=container,
-            bg=backgroundColor,
+            bg=color3,
             padx=10,
             pady=10,
         )

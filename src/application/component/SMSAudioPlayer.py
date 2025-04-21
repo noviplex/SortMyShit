@@ -7,11 +7,11 @@ class SMSAudioPlayer(Frame):
             self,
             container: Tk,
             audio_path: str,
-            backgroundColor: str,
+            color3: str,
     ):
         super().__init__(
             master=container,
-            bg=backgroundColor,
+            bg=color3,
             padx=5,
             pady=5,
         )

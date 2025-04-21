@@ -11,20 +11,20 @@ class FileNameComparatorTest(TestCase):
         self.file1Path = "/tests/domain/service/FileNameComparatorTest/testFile1.txt"
         self.file2Path = "/tests/domain/service/FileNameComparatorTest/subfolder/testFile1.txt"
 
-        self.binaryComparator = FileNameComparator(
+        self.fileNameComparator = FileNameComparator(
             Mock(EventManagerInterface)
         )
 
         return super().setUp()
 
     def test_given_two_different_fileNames_in_different_folders_when_comparing_then_returns_true(self):
-        self.assertTrue(self.binaryComparator.compare(
-            FileInfo(self.file1Path, ""),
-            FileInfo(self.file2Path, ""),
+        self.assertTrue(self.fileNameComparator.compare(
+            FileInfo(self.file1Path, "", 500, ""),
+            FileInfo(self.file2Path, "", 500, ""),
         ))
 
     def test_given_twice_the_same_file_when_comparing_then_returns_false(self):
-        self.assertFalse(self.binaryComparator.compare(
-            FileInfo(self.file1Path, ""),
-            FileInfo(self.file1Path, ""),
+        self.assertFalse(self.fileNameComparator.compare(
+            FileInfo(self.file1Path, "", 500, ""),
+            FileInfo(self.file1Path, "", 500, ""),
         ))

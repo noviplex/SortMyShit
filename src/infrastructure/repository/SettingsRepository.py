@@ -8,27 +8,27 @@ class SettingsRepository(SettingsRepositoryInterface):
     appSettings = Settings()
     runDir: str = None
 
-    def loadAll(self):
+    def fetchAll(self):
         try:
             jsonUserSettingsFile = open(self.runDir + "/settings.json")
             userSettings = json_load(jsonUserSettingsFile)
             jsonUserSettingsFile.close()
             return userSettings
         except FileNotFoundError:
-            self.save(self.appSettings.defaultUserSettings)
+            self.saveAll(self.appSettings.defaultUserSettings)
             return self.appSettings.defaultUserSettings
 
-    def save(self, userSettings):
+    def fetchOne(self, name: str):
+        userSettings = self.fetchAll()
+        return userSettings[name]
+
+    def saveAll(self, userSettings):
         jsonUserSettingsFile = open(self.runDir + "/settings.json", "w+")
         jsonUserSettingsFile.write(json_dumps(userSettings))
         jsonUserSettingsFile.close()
 
-    def loadOne(self, name: str):
-        userSettings = self.loadAll()
-        return userSettings[name]
-
-    def updateOne(self, name: str, value: str):
-        userSettings = self.loadAll()
+    def saveOne(self, name: str, value: str):
+        userSettings = self.fetchAll()
         userSettings[name] = value
 
-        self.save(userSettings)
+        self.saveAll(userSettings)
