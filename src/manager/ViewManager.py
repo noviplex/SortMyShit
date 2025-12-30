@@ -1,7 +1,7 @@
 from inspect import signature
 from tkinter import Tk
 
-from src.manager.ServiceManager import ServiceManager
+from pysman.ServiceManager import ServiceManager
 
 from src.application.view.SMSView import SMSView
 

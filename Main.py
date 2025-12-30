@@ -1,6 +1,6 @@
-from os import path as os_path
+from os import path as os_path, getcwd as os_getcwd
 from sys import argv as sys_argv
-from tkinter import Tk
+from tkinter import Tk, PhotoImage
 
 from src.application.service.SMSRenderer import SMSRenderer
 from src.application.view.ConsoleView import ConsoleView
@@ -24,7 +24,7 @@ from src.infrastructure.repository.SettingsRepository import SettingsRepository
 from src.infrastructure.repository.FileInfoRepository import FileInfoRepository
 from src.infrastructure.repository.TmpStorageRepository import TmpStorageRepository
 
-from src.manager.ServiceManager import ServiceManager
+from pysman.ServiceManager import ServiceManager
 from src.manager.ViewManager import ViewManager
 
 
@@ -61,6 +61,7 @@ class SortMyShit:
         serviceManager.get_service("LogFileLogger").activate_logging()
 
         root = Tk()
+        root.iconphoto(False, PhotoImage(file=os_getcwd() + '/src/application/assets/icon.png'))
 
         viewManager.register_views(root, {
             "settings": SettingsView,

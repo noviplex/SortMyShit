@@ -25,7 +25,6 @@ class SMSRenderer:
         root.title("SortMyShit")
         root.geometry('1600x900')
         root.resizable(width=False, height=False)
-        root.iconphoto(True, PhotoImage(file="icon.png"))
         root.configure(bg=self.color1)
 
         menu = Menu(root)
