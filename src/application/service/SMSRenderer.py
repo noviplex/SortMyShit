@@ -1,4 +1,4 @@
-from tkinter import Tk, Menu, Frame, PhotoImage, font as tkFont
+from tkinter import Tk, Menu, Frame, font as tkFont
 
 from src.application.view.SMSView import SMSView
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
