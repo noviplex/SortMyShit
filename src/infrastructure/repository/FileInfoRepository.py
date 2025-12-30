@@ -10,69 +10,71 @@ from src.application.service.EventManager import EventManager
 class FileInfoRepository(FileInfoRepositoryInterface):
     def __init__(
         self,
-        settingsRepository: SettingsRepository,
-        eventManager: EventManager,
+        settings_repository: SettingsRepository,
+        event_manager: EventManager,
     ):
-        self.settingsRepository = settingsRepository
-        self.eventManager = eventManager
+        self.settings_repository = settings_repository
+        self.event_manager = event_manager
 
-    def fetchAllFromFolder(
+    def fetch_all_from_folder(
         self,
-        folderPath: str,
-        skipEmptyFiles: bool = True,
-        skipLargeFiles: bool = True,
+        folder_path: str,
+        skip_empty_files: bool = True,
+        skip_large_files: bool = True,
     ) -> list[FileInfo]:
-        allFileFullPaths = [y for x in os_walk(folderPath) for y in glob(os_path.join(x[0], '*.*'))]
+        all_file_full_paths = [
+            y for x in os_walk(folder_path) for y in glob(os_path.join(x[0], "*.*"))
+        ]
 
-        allFiles = []
+        all_files = []
 
-        for fileFullPath in allFileFullPaths:
-            if not os_path.isfile(fileFullPath):
+        for file_full_path in all_file_full_paths:
+            if not os_path.isfile(file_full_path):
                 continue
 
             if (
-                os_path.getsize(fileFullPath) > self.settingsRepository.fetchOne("binaryComparisonLargeFilesThreshold")
-                and self.settingsRepository.fetchOne("binarySearch") is True
-                and self.settingsRepository.fetchOne("binarySearchLargeFiles") is False
-                and skipLargeFiles
+                os_path.getsize(file_full_path)
+                > self.settings_repository.fetch_one("binary_comparison_large_files_threshold")
+                and self.settings_repository.fetch_one("binary_search") is True
+                and self.settings_repository.fetch_one("binary_search_large_files") is False
+                and skip_large_files
             ):
-                self.eventManager.trigger("output", "Skipping large file " + fileFullPath)
+                self.event_manager.trigger("output", "Skipping large file " + file_full_path)
             else:
-                f = open(fileFullPath, 'rb')
+                with open(file_full_path, "rb") as f:
+                    file_partial_contents = f.read(128)
 
-                filePartialContents = f.read(128)
-
-                if len(filePartialContents) == 0 and skipEmptyFiles:
-                    self.eventManager.trigger("output", "Skipping empty File " + fileFullPath)
-                else:
-                    allFiles.append(
-                        FileInfo(
-                            fullPath=fileFullPath,
-                            fileName=os_path.basename(fileFullPath),
-                            size=os_path.getsize(fileFullPath),
-                            partialContents=filePartialContents,
+                    if len(file_partial_contents) == 0 and skip_empty_files:
+                        self.event_manager.trigger("output", "Skipping empty File " + file_full_path)
+                    else:
+                        all_files.append(
+                            FileInfo(
+                                full_path=file_full_path,
+                                file_name=os_path.basename(file_full_path),
+                                size=os_path.getsize(file_full_path),
+                                partial_contents=file_partial_contents,
+                            )
                         )
-                    )
-                f.close()
 
-        return allFiles
+        return all_files
 
-    def fetchOne(self, fullPath: str, withFullContents: bool = False, readMode: str = "rb") -> FileInfo:
-        fileOpened = open(fullPath, readMode)
-        filePartialContents = fileOpened.read(128)
-
-        if withFullContents:
-            fileContents = fileOpened.read()
-        fileOpened.close()
+    def fetch_one(
+        self, full_path: str, with_full_contents: bool = False, read_mode: str = "rb"
+    ) -> FileInfo:
+        file_contents = None
+        with open(full_path, read_mode) as file_opened:
+            file_partial_contents = file_opened.read(128)
+            if with_full_contents:
+                file_contents = file_opened.read()
 
         return FileInfo(
-            fullPath=fullPath,
-            fileName=os_path.basename(fullPath),
-            size=os_path.getsize(fullPath),
-            partialContents=filePartialContents,
-            contents=fileContents
+            full_path=full_path,
+            file_name=os_path.basename(full_path),
+            size=os_path.getsize(full_path),
+            partial_contents=file_partial_contents,
+            contents=file_contents,
         )
 
-    def removeOne(self, filePath: str):
-        os_remove(filePath)
-        self.eventManager.trigger("output", "Removed file " + filePath)
+    def remove_one(self, file_path: str):
+        os_remove(file_path)
+        self.event_manager.trigger("output", "Removed file " + file_path)

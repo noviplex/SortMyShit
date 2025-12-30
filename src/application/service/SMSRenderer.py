@@ -1,11 +1,7 @@
-from tkinter import Tk, font as tkFont
+from tkinter import Tk, Menu, Frame, PhotoImage, font as tkFont
 
 from src.application.view.SMSView import SMSView
-from src.application.component.SMSButton import SMSButton
-from src.application.component.SMSButtonContainer import SMSButtonContainer
-
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
-
 from src.manager.ViewManager import ViewManager
 
 
@@ -17,61 +13,62 @@ class SMSRenderer:
         self.settingsRepository = settingsRepository
 
     def render(self, root: Tk, viewManager: ViewManager):
-        color1 = self.settingsRepository.fetchOne("color1")
-        color3 = self.settingsRepository.fetchOne("color3")
-        color4 = self.settingsRepository.fetchOne("color4")
-
         self.viewManager = viewManager
+        self.color1 = self.settingsRepository.fetch_one("color1")
+        self.color2 = self.settingsRepository.fetch_one("color2")
+        self.color3 = self.settingsRepository.fetch_one("color3")
+        self.color4 = self.settingsRepository.fetch_one("color4")
 
         default_font = tkFont.nametofont("TkDefaultFont")
-        default_font.configure(size=14)
+        default_font.configure(size=15)
 
         root.title("SortMyShit")
         root.geometry('1600x900')
         root.resizable(width=False, height=False)
-        root.configure(bg=color1)
+        root.iconphoto(True, PhotoImage(file="icon.png"))
+        root.configure(bg=self.color1)
 
-        navbar = SMSButtonContainer(
+        menu = Menu(root)
+        root.config(menu=menu)
+
+        root.bind('<KeyPress-d>', lambda event: self.change_view("remove_duplicates"))
+        root.bind('<KeyPress-f>', lambda event: self.change_view("remove_empty_folders"))
+        root.bind('<KeyPress-i>', lambda event: self.change_view("remove_empty_files"))
+        root.bind('<KeyPress-s>', lambda event: self.change_view("sort_files"))
+        root.bind('<KeyPress-c>', lambda event: self.change_view("console"))
+
+        actions_menu = Menu(menu, tearoff=0)
+        actions_menu.add_command(label="Remove duplicate files (D)", command=lambda: self.change_view("remove_duplicates"))
+        actions_menu.add_command(label="Remove Empty Folders (F)", command=lambda: self.change_view("remove_empty_folders"))
+        actions_menu.add_command(label="Remove Empty Files (I)", command=lambda: self.change_view("remove_empty_files"))
+        actions_menu.add_command(label="Sort Files by Folder (S)", command=lambda: self.change_view("sort_files"))
+        actions_menu.add_command(label="Show Console (C)", command=lambda: self.change_view("console"))
+
+        file_menu = Menu(menu, tearoff=0)
+        file_menu.add_command(label="Settings", command=lambda: self.change_view("settings"))
+        file_menu.add_command(label='Exit', command=root.destroy)
+
+        menu.add_cascade(label="File", menu=file_menu)
+        menu.add_cascade(label="Actions", menu=actions_menu)
+        menu.add_cascade(label="Help (H)", command=lambda: self.change_view("console"))
+
+        Frame(
             root,
-            bg=color1,
-            direction="horizontal",
-            width=300,
-            height=500,
-            padx=10,
-            pady=10,
-        )
-        navbar.setButtons([
-            SMSButton(
-                navbar,
-                color3=color3,
-                color4=color4,
-                text="Home",
-                command=lambda: self.changeView("home"),
-                width=10,
-                height=1,
-            ),
-            SMSButton(
-                navbar,
-                color3=color3,
-                color4=color4,
-                text="Settings",
-                command=lambda: self.changeView("settings"),
-                width=10,
-                height=1,
-            ),
-        ])
-        navbar.grid(row=0, column=0, sticky='w')
+            bg=self.color2,
+            height=2,
+            bd=0
+        ).grid(row=1, column=0, columnspan=2, sticky="ew")
 
-        self.view = self.viewManager.get("home")
-        self.setView(self.view)
+        self.view = self.viewManager.get("console")
+        self.set_view(self.view)
 
-    def setView(self, view: SMSView):
+    def set_view(self, view: SMSView):
         self.view = view
-        self.view.grid(row=1, column=0, sticky="nswe")
+        self.view.grid(row=2, column=0, sticky="nswe")
 
-    def hideCurrentView(self):
+    def hide_current_view(self):
         self.view.grid_forget()
 
-    def changeView(self, name: str):
-        self.hideCurrentView()
-        self.setView(self.viewManager.get(name))
+    def change_view(self, name: str):
+        self.hide_current_view()
+        self.set_view(self.viewManager.get(name))

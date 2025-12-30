@@ -8,18 +8,18 @@ from src.application.component.SMSInputWithLabel import SMSInputWithLabel
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 
 
-class SMSSettingsView(SMSView):
+class SettingsView(SMSView):
     def __init__(
         self,
         container: Tk,
-        settingsRepository: SettingsRepository,
+        settings_repository: SettingsRepository,
     ):
-        self.settingsRepository = settingsRepository
+        self.settings_repository = settings_repository
 
-        self.color1 = self.settingsRepository.fetchOne("color1")
-        self.color2 = self.settingsRepository.fetchOne("color2")
-        self.color3 = self.settingsRepository.fetchOne("color3")
-        self.color4 = self.settingsRepository.fetchOne("color4")
+        self.color1 = self.settings_repository.fetch_one("color1")
+        self.color2 = self.settings_repository.fetch_one("color2")
+        self.color3 = self.settings_repository.fetch_one("color3")
+        self.color4 = self.settings_repository.fetch_one("color4")
 
         super().__init__(
             container=container,
@@ -27,16 +27,19 @@ class SMSSettingsView(SMSView):
             height=500,
         )
 
-        self.createView()
+        self.create_view()
 
-    def createView(self):
-        self.__expand()
+    def create_view(self):
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.grid_propagate(0)
 
         SMSLabel(
             container=self,
             bg=self.color1,
             fg=self.color4,
-            text="Settings"
+            text="Settings",
+            font=("Arial", 24)
         ).grid(row=0, column=0, sticky='w')
 
         SMSLabel(
@@ -53,20 +56,20 @@ class SMSSettingsView(SMSView):
             bd=0
         ).grid(row=2, column=0, columnspan=2, sticky="ew")
 
-        self.__createInputWithLabel(
+        self.__create_input_with_label(
             text="Folder to Sort",
-            settingName="folderToProcess",
-            value=self.settingsRepository.fetchOne("folderToProcess")
+            setting_name="folder_to_process",
+            value=self.settings_repository.fetch_one("folder_to_process")
         ).grid(row=3, column=0, sticky='w')
 
-        self.__createInputWithLabel(
+        self.__create_input_with_label(
             text="Destination folder",
-            settingName="destinationFolder",
-            value=self.settingsRepository.fetchOne("destinationFolder")
+            setting_name="destination_folder",
+            value=self.settings_repository.fetch_one("destination_folder")
         ).grid(row=4, column=0, sticky='w')
 
-        self.__createSettingCheckButton(
-            settingName="keepOriginalFiles",
+        self.__create_setting_check_button(
+            setting_name="keep_original_files",
             text="Do not delete files in original folders",
         ).grid(row=5, column=0, sticky='w')
 
@@ -84,19 +87,19 @@ class SMSSettingsView(SMSView):
             bd=0
         ).grid(row=7, column=0, columnspan=2, sticky="ew")
 
-        self.__createInputWithLabel(
+        self.__create_input_with_label(
             text="Folder to Process",
-            settingName="removeDuplicatesFolder",
-            value=self.settingsRepository.fetchOne("removeDuplicatesFolder")
+            setting_name="remove_duplicates_folder",
+            value=self.settings_repository.fetch_one("remove_duplicates_folder")
         ).grid(row=8, column=0, sticky='w')
 
-        self.__createSettingCheckButton(
-            settingName="binarySearch",
+        self.__create_setting_check_button(
+            setting_name="binary_search",
             text="Binary comparison (if disabled, will do a filename comparison instead)",
         ).grid(row=9, column=0, sticky='w')
 
-        self.__createSettingCheckButton(
-            settingName="binarySearchLargeFiles",
+        self.__create_setting_check_button(
+            setting_name="binary_search_large_files",
             text="Enable binary comparison for large files (warning: may crash on large files)",
         ).grid(row=9, column=1, sticky='w')
 
@@ -114,52 +117,47 @@ class SMSSettingsView(SMSView):
             bd=0
         ).grid(row=11, column=0, columnspan=2, sticky="ew")
 
-        self.__createSettingCheckButton(
-            settingName="logOutputInFile",
+        self.__create_setting_check_button(
+            setting_name="log_output_in_file",
             text="Log output in logfile",
         ).grid(row=12, column=0, sticky='w')
 
-    def __expand(self):
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-        self.grid_propagate(0)
-
-    def __createSettingCheckButton(self, settingName: str, text: str):
-        booleanVar = BooleanVar()
-        booleanVar.set(self.settingsRepository.fetchOne(settingName))
+    def __create_setting_check_button(self, setting_name: str, text: str):
+        boolean_var = BooleanVar()
+        boolean_var.set(self.settings_repository.fetch_one(setting_name))
         return SMSCheckButton(
             container=self,
             text=text,
-            variable=booleanVar,
+            variable=boolean_var,
             bg=self.color1,
             fg=self.color4,
-            command=lambda: self.settingsRepository.saveOne(settingName, booleanVar.get())
+            command=lambda: self.settings_repository.save_one(setting_name, boolean_var.get())
         )
 
-    def __createInputWithLabel(self, text: str, settingName: str, value: str):
-        settingVar = StringVar()
-        settingVar.set(value=value)
-        settingVar.trace_add(
+    def __create_input_with_label(self, text: str, setting_name: str, value: str):
+        setting_var = StringVar()
+        setting_var.set(value=value)
+        setting_var.trace_add(
             "write",
-            lambda name, index, mode, settingVar=settingVar:
-            self.__changeInputWithLabelSetting(
-                settingName=settingName,
-                settingVar=settingVar
+            lambda name, index, mode, setting_var=setting_var:
+            self.__change_input_with_label_setting(
+                setting_name=setting_name,
+                setting_var=setting_var
             )
         )
 
         return SMSInputWithLabel(
             container=self,
             text=text,
-            entryBg=self.color3,
+            entry_bg=self.color3,
             bg=self.color1,
             fg=self.color4,
-            settingVar=settingVar,
+            setting_var=setting_var,
         )
 
-    def __changeInputWithLabelSetting(
+    def __change_input_with_label_setting(
         self,
-        settingName: str,
-        settingVar: StringVar
+        setting_name: str,
+        setting_var: StringVar
     ):
-        self.settingsRepository.saveOne(settingName, settingVar.get())
+        self.settings_repository.save_one(setting_name, setting_var.get())

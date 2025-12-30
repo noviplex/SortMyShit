@@ -2,12 +2,12 @@ from tkinter import Tk, Frame
 from playsound import playsound
 
 
-class SMSAudioPlayer(Frame):
+class SMSAudioButton(Frame):
     def __init__(
-            self,
-            container: Tk,
-            audio_path: str,
-            color3: str,
+        self,
+        container: Tk,
+        audio_path: str,
+        color3: str,
     ):
         super().__init__(
             master=container,

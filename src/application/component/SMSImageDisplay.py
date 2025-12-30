@@ -1,22 +1,33 @@
-from tkinter import Tk, Frame, Label
-from PIL import Image, ImageTk
+from tkinter import Tk, Label
+from PIL import Image, ImageFile, ImageTk
 
 
-class SMSImageDisplay(Frame):
+class SMSImageDisplay(Label):
     def __init__(
-            self,
-            container: Tk,
-            imagePath: str,
-            color3: str,
+        self,
+        container: Tk,
+        full_path: str,
+        target_width: int = 600,
+        target_height: int = 600,
+        bg: str = "#FFFFFF",
     ):
-        super().__init__(
-            master=container,
-            bg=color3,
-            padx=10,
-            pady=10,
-        )
+        image = ImageTk.PhotoImage(self.__resize_image(Image.open(full_path), target_width, target_height))
 
-        self.image = Image.open(imagePath)
-        self.image = ImageTk.PhotoImage(self.image)
-        self.imageLabel = Label(self, image=self.image)
-        self.imageLabel.pack()
+        super().__init__(container, image=image, width=target_width, height=target_height, background=bg)
+        self.image = image
+
+    def __resize_image(self, image: ImageFile, target_width: int, target_height: int) -> ImageFile:
+        image_width = image.size[0]
+        image_height = image.size[1]
+
+        height_ratio = image_width / target_width
+        width_ratio = image_height / target_height
+
+        if image_height / height_ratio > target_height:
+            image_height = target_height
+            image_width = int(image_width / width_ratio)
+        else:
+            image_height = int(image_height / height_ratio)
+            image_width = target_width
+
+        return image.resize((image_width, image_height))

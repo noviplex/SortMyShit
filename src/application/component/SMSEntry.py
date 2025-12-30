@@ -5,20 +5,20 @@ class SMSEntry(Entry):
     def __init__(
         self,
         container: Tk,
-        stringVar: StringVar,
+        string_var: StringVar,
         width: int,
+        border_color: str,
         bg: str,
         fg: str,
     ):
-
         super().__init__(
             master=container,
-            textvariable=stringVar,
+            textvariable=string_var,
             background=bg,
-            highlightcolor=bg,
+            highlightbackground=border_color,
             fg=fg,
             border=0,
             borderwidth=0,
             width=width,
-            font="Arial 14",
+            font=("Arial", 14),
         )

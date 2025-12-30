@@ -1,14 +1,14 @@
 class FileInfo:
     def __init__(
         self,
-        fullPath: str,
-        fileName: str,
+        full_path: str,
+        file_name: str,
         size: int,
-        partialContents: str,
+        partial_contents: str,
         contents: str = None
     ):
-        self.fullPath = fullPath
-        self.fileName = fileName
+        self.full_path = full_path
+        self.file_name = file_name
         self.size = size
-        self.partialContents = partialContents
+        self.partial_contents = partial_contents
         self.contents = contents

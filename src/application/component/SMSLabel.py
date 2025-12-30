@@ -8,20 +8,23 @@ class SMSLabel(Label):
         text: str,
         bg: str,
         fg: str,
+        font: str = ("Arial", 14),
+        padx: int = 10,
+        pady: int = 10
     ):
-
-        self.textVariable = StringVar(container, text)
+        self.text_variable = StringVar(container, text)
 
         super().__init__(
             master=container,
             bg=bg,
             fg=fg,
-            textvariable=self.textVariable,
+            textvariable=self.text_variable,
             text=text,
-            padx=10,
-            pady=10,
+            padx=padx,
+            pady=pady,
+            font=font,
         )
 
-    def setText(self, text: str):
-        self.textVariable.set(text)
+    def set_text(self, text: str):
+        self.text_variable.set(text)
         self.update()

@@ -4,11 +4,11 @@ from tkinter import Tk, Frame
 
 class SMSView(ABC, Frame):
     def __init__(
-            self,
-            container: Tk,
-            bg: str,
-            width: int = 1600,
-            height: int = 800,
+        self,
+        container: Tk,
+        bg: str,
+        width: int = 1600,
+        height: int = 800,
     ):
         super().__init__(
             container,
@@ -20,5 +20,5 @@ class SMSView(ABC, Frame):
         self.configure(bg=bg)
 
     @abstractmethod
-    def createView():
+    def create_view():
         pass

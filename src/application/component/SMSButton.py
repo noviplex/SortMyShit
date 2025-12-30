@@ -1,27 +1,32 @@
 from tkinter import Tk, Button
+from typing import Callable
 
 
 class SMSButton(Button):
     def __init__(
-            self,
-            container: Tk,
-            text: str,
-            command: callable,
-            color3: str,
-            color4: str,
-            width=30,
-            height=2,
+        self,
+        container: Tk,
+        text: str,
+        command: Callable,
+        bg: str,
+        fg: str,
+        border_color: str,
+        width: int = 30,
+        height: int = 2,
     ):
         super().__init__(
             master=container,
             text=text,
-            background=color3,
-            fg=color4,
-            activebackground=color4,
-            activeforeground=color3,
+            background=bg,
+            fg=fg,
+            activebackground=fg,
+            activeforeground=bg,
+            highlightbackground=border_color,
+            highlightthickness=1,
             command=command,
             width=width,
             height=height,
             border=0,
             borderwidth=0,
+            font=("Arial", 14),
         )

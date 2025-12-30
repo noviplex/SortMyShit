@@ -7,33 +7,34 @@ from src.application.view.SMSView import SMSView
 
 
 class ViewManager:
-    def __new__(viewManager):
-        if not hasattr(viewManager, 'instance'):
-            viewManager.instance = super(viewManager, viewManager).__new__(viewManager)
-        return viewManager.instance
+    def __new__(cls):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(ViewManager, cls).__new__(cls)
+        return cls.instance
 
     def __init__(self):
-        self.viewContainer = {}
+        self.view_container = {}
 
-    def setServiceManager(self, serviceManager: ServiceManager):
-        self.serviceManager = serviceManager
+    def set_service_manager(self, service_manager: ServiceManager):
+        self.service_manager = service_manager
 
-    def get(self, viewName):
-        return self.viewContainer[viewName]
+    def get(self, view_name):
+        return self.view_container[view_name]
 
-    def registerView(self, mainContainer: Tk, viewName: str, view: SMSView):
-        if viewName not in self.viewContainer:
+    def register_view(self, main_container: Tk, view_name: str, view: SMSView):
+        if view_name not in self.view_container:
             dependencies = signature(view).parameters
 
-            viewDependencies = [mainContainer]
-            for dependencyName in dependencies:
-                if (dependencyName != "container"):
-                    viewDependencies.append(self.serviceManager.get(dependencies[dependencyName].annotation.__name__))
-            self.viewContainer[viewName] = view(*viewDependencies)
+            view_dependencies = [main_container]
+            for dependency_name in dependencies:
+                if dependency_name != "container":
+                    annotation = dependencies[dependency_name].annotation
+                    view_dependencies.append(self.service_manager.get_service(annotation.__name__))
+            self.view_container[view_name] = view(*view_dependencies)
 
-    def unregisterView(self, viewName):
-        del self.viewContainer[viewName]
+    def unregister_view(self, view_name):
+        del self.view_container[view_name]
 
-    def registerViews(self, mainContainer: Tk, views: dict[SMSView]):
-        for viewName, view in views.items():
-            self.registerView(mainContainer, viewName, view)
+    def register_views(self, main_container: Tk, views: dict[str, SMSView]):
+        for view_name, view in views.items():
+            self.register_view(main_container, view_name, view)

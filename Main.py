@@ -3,21 +3,26 @@ from sys import argv as sys_argv
 from tkinter import Tk
 
 from src.application.service.SMSRenderer import SMSRenderer
-from src.application.view.SMSHomeView import SMSHomeView
-from src.application.view.SMSSettingsView import SMSSettingsView
+from src.application.view.ConsoleView import ConsoleView
+from src.application.view.SettingsView import SettingsView
+from src.application.view.RemoveDuplicatesView import RemoveDuplicatesView
+from src.application.view.RemoveEmptyFilesView import RemoveEmptyFilesView
+from src.application.view.RemoveEmptyFoldersView import RemoveEmptyFoldersView
+from src.application.view.SortFilesView import SortFilesView
 from src.application.service.EventManager import EventManager
 
-from src.domain.service.DuplicateRemover import DuplicateRemover
-from src.domain.service.FileManager import FileManager
-from src.domain.service.FileSorter import FileSorter
-from src.domain.service.EmptyFolderRemover import EmptyFolderRemover
-from src.domain.service.EmptyFileRemover import EmptyFileRemover
-from src.domain.service.BinaryComparator import BinaryComparator
-from src.domain.service.FileNameComparator import FileNameComparator
+from src.domain.service.compare.CompareBinary import CompareBinary
+from src.domain.service.compare.CompareFileName import CompareFileName
+from src.domain.service.list.ListDuplicate import ListDuplicate
+from src.domain.service.remove.RemoveDuplicate import RemoveDuplicate
+from src.domain.service.remove.RemoveEmptyFolder import RemoveEmptyFolder
+from src.domain.service.remove.RemoveEmptyFile import RemoveEmptyFile
+from src.domain.service.sort.SortFile import SortFile
 
 from src.infrastructure.logger.LogFileLogger import LogFileLogger
 from src.infrastructure.repository.SettingsRepository import SettingsRepository
 from src.infrastructure.repository.FileInfoRepository import FileInfoRepository
+from src.infrastructure.repository.TmpStorageRepository import TmpStorageRepository
 
 from src.manager.ServiceManager import ServiceManager
 from src.manager.ViewManager import ViewManager
@@ -27,40 +32,46 @@ class SortMyShit:
     def main():
         serviceManager = ServiceManager()
         viewManager = ViewManager()
-        viewManager.setServiceManager(serviceManager)
+        viewManager.set_service_manager(serviceManager)
 
         services = [
             EventManager,
             SettingsRepository,
             FileInfoRepository,
+            TmpStorageRepository,
             LogFileLogger,
-            FileNameComparator,
-            BinaryComparator,
-            DuplicateRemover,
-            FileSorter,
-            FileManager,
-            EmptyFolderRemover,
-            EmptyFileRemover,
+            CompareFileName,
+            CompareBinary,
+            SortFile,
+            ListDuplicate,
+            RemoveEmptyFolder,
+            RemoveEmptyFile,
+            RemoveDuplicate,
             SMSRenderer,
         ]
 
-        serviceManager.registerAliases({
+        serviceManager.register_aliases({
             "SettingsRepositoryInterface": SettingsRepository,
             "FileInfoRepositoryInterface": FileInfoRepository,
+            "TmpStorageRepositoryInterface": TmpStorageRepository,
             "EventManagerInterface": EventManager,
         })
-        serviceManager.registerServices(services)
-        serviceManager.get("SettingsRepository").runDir = os_path.dirname(os_path.abspath(sys_argv[0]))
-        serviceManager.get("LogFileLogger").activateLogging()
+        serviceManager.register_services(services)
+        serviceManager.get_service("SettingsRepository").runDir = os_path.dirname(os_path.abspath(sys_argv[0]))
+        serviceManager.get_service("LogFileLogger").activate_logging()
 
         root = Tk()
 
-        viewManager.registerViews(root, {
-            "home": SMSHomeView,
-            "settings": SMSSettingsView
+        viewManager.register_views(root, {
+            "settings": SettingsView,
+            "remove_duplicates": RemoveDuplicatesView,
+            "remove_empty_files": RemoveEmptyFilesView,
+            "remove_empty_folders": RemoveEmptyFoldersView,
+            "sort_files": SortFilesView,
+            "console": ConsoleView,
         })
 
-        serviceManager.get("SMSRenderer").render(
+        serviceManager.get_service("SMSRenderer").render(
             root,
             viewManager
         )

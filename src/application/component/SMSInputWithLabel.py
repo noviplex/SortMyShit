@@ -1,7 +1,8 @@
-from tkinter import Tk, StringVar, Frame
+from tkinter import Tk, StringVar, Frame, filedialog
 
 from src.application.component.SMSEntry import SMSEntry
 from src.application.component.SMSLabel import SMSLabel
+from src.application.component.SMSButton import SMSButton
 
 
 class SMSInputWithLabel(Frame):
@@ -9,10 +10,10 @@ class SMSInputWithLabel(Frame):
         self,
         container: Tk,
         text: str,
-        entryBg: str,
+        entry_bg: str,
         bg: str,
         fg: str,
-        settingVar: StringVar,
+        setting_var: StringVar,
     ):
         super().__init__(
             master=container,
@@ -33,10 +34,28 @@ class SMSInputWithLabel(Frame):
             fg=fg,
             text=text
         ).grid(row=0, column=0, sticky="w")
+
+        SMSButton(
+            container=self,
+            text="...",
+            width=5,
+            height=1,
+            bg=bg,
+            fg=fg,
+            border_color=entry_bg,
+            command=lambda setting_var=setting_var: setting_var.set(
+                filedialog.askdirectory(
+                    initialdir="~/",
+                    title="Select a Directory",
+                )
+            )
+        ).grid(row=0, column=1)
+
         SMSEntry(
             container=self,
-            bg=entryBg,
+            bg=entry_bg,
             fg=fg,
-            stringVar=settingVar,
+            border_color=fg,
+            string_var=setting_var,
             width=50
-        ).grid(row=0, column=1, sticky="e")
+        ).grid(row=0, column=2, sticky="e")

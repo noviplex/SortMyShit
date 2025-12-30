@@ -25,4 +25,5 @@ class SMSCheckButton(Checkbutton):
             highlightthickness=0,
             padx=padx,
             pady=pady,
+            font=("Arial", 14),
         )

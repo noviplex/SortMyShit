@@ -5,11 +5,11 @@ class EventManager(EventManagerInterface):
     def __init__(self):
         self.listeners = {}
 
-    def subscribe(self, eventName: str, listener: callable):
-        if eventName not in self.listeners:
-            self.listeners[eventName] = []
-        self.listeners[eventName].append(listener)
+    def subscribe(self, event_name: str, listener: callable):
+        if event_name not in self.listeners:
+            self.listeners[event_name] = []
+        self.listeners[event_name].append(listener)
 
-    def trigger(self, eventName, *args, **kwargs):
-        for listener in self.listeners[eventName]:
+    def trigger(self, event_name, *args, **kwargs):
+        for listener in self.listeners.get(event_name, []):
             listener(*args, **kwargs)
