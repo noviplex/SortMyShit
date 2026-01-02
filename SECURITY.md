@@ -11,3 +11,9 @@ We ensure that all released versions of this project will include necessary secu
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability, please report it responsibly by creating an issue within the project
+
+## Maintenance and project ownership
+
+https://github.com/BusyChild77 : maintainer of the noviplex/SortMyShit repository, responsible for reviewing contributions, merging changes, and handling security reports
+
+Contact: directly through Github issues
