@@ -14,4 +14,4 @@ If you discover a security vulnerability, please report it responsibly by creati
 
 ## Statement of ownership
 
-I, BusyChild77 (https://github.com/BusyChild77), am a maintainer of the noviplex/SortMyShit repository (https://github.com/noviplex/SortMyShit) and am responsible for reviewing contributions, merging changes, and handling security reports; you can contact me regarding security issues at <busychild77.margarine338@silomails.com>.
+I, BusyChild77 (<https://github.com/BusyChild77>), am a maintainer of the noviplex/SortMyShit repository (<https://github.com/noviplex/SortMyShit>) and am responsible for reviewing contributions, merging changes, and handling security reports; you can contact me regarding security issues at <busychild77.margarine338@silomails.com>.
