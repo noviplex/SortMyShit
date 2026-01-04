@@ -1,2 +1,2 @@
 pyinstaller==6.12.0
-git+https://github.com/noviplex/PySMan#egg=pysman
+pysman==0.1.0
